@@ -1,0 +1,75 @@
+==================================================================
+https://keybase.io/harrsch
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://www.chrisharrsch.com
+  * I am harrsch (https://keybase.io/harrsch) on keybase.
+  * I have a public key with fingerprint 116C 461E 3AE2 A3A9 AB0B  666F 1080 2A38 4951 F4B4
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120a6ede4076f26540f3a3631d6c47954d9ae189a2ce7b09e5f99202eacb736da180a",
+      "fingerprint": "116c461e3ae2a3a9ab0b666f10802a384951f4b4",
+      "host": "keybase.io",
+      "key_id": "10802a384951f4b4",
+      "kid": "01013e1740a3ba74991a16f3f6dbabd715beaab6425ae4818c02bd4050a3b06525890a",
+      "uid": "8da999e6a48f7aa0f0bc5c23552bb719",
+      "username": "harrsch"
+    },
+    "service": {
+      "hostname": "www.chrisharrsch.com",
+      "protocol": "http:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1677895851,
+  "expire_in": 157680000,
+  "prev": "a550f12ec1614548e537d2f00eaa8b5f901aeaceb03ece4fde5ec0c1688a8bd4",
+  "seqno": 19,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.1.13
+Comment: https://keybase.io/crypto
+
+yMN2AnicbZJ/UJRFHMbvRGJAzwgihWy0o0R+CPv+ft8Dsi5HpsGBTEXE8Nr3fffl
+XoF76b2Dg4AENEiLqTHBACWIkdFAnYgcI1JAioDRxgqRuKkZ06igaxKBIIPeY/C/
+9p+d/e7zfPbZ726vwUvnp/cviWBf2H6vXT/YXZ+rE5edbik08opYYDQVGjPR4oSy
+RGR3WDJl0WgyAgwHkEYiIgFDSzhNkUAiIEETmEgLJMNRpMhBhLEcxAXE8IBDlMRx
+OMARFHiGoEWIsQAao4ySbMtAao4q2xwaFsM0N40hAiIcEpCDPOBpmpYwwAKtwJIc
+hUkkT2pGq2L3OLRwPLSjaFnRatrCshjvf/QPcgOMQBhDAkjwkCE5DoMYLRESLfKQ
+FxmM4hGEPE3iFEQki7ECwHmRBJRHD2gKp1huMXfuIo4VIcdxiIYkKzEQAgnwAiXg
+BEXhPM9gnEdoR6oNZiNNbYWqahesxuIoo1bMkwXk6avnIksCp9MZLVhV2b6kjBaU
+bA2RoyoORVCyPAiHI8fkATgKchYdiLcssSy8bBO1bmqGPKTaZcVmNGGaUnDIHjhG
+MwzLUSyFRRlRfo6sIovsUVAMzQJteI5BeRoSUhSQMBwJGI2RFMkiimBEXAJAawzL
+a88IMKi9IuIBgQRESiKikAA0Nctq+6Kn13b0qk3R2JyWE2ZoTLucYYOOXBUZi3u6
+X16u0/vpHvJe5vlmOj9f/wefL6vLX9f9ZUz2CtdKdXhm+lhrU8B5d+Ku+zVTbXz1
+w6mjb9/wPvrNeGeMd7J7b2TWTyXiz66JioWw2dTw6boLWzJDfJxXOvjKJ0qH3ddQ
+5chmh6/vQVMOHlw1/0/8uaTU4Mnrt/6q3Vzx2ap1jyTZ1z9eXZPSs39yz9l/m01O
+pTViwrAxJOr9kc6nt1W3Woeeim9e6zW0L6zIdrMgOa3JuW9T4eYbEdOTU0UtjWv6
+3HMznQPFQ/NKSP/tROrqXMLV5e2Dp24mjo3fOfSYPujY89/3zvuHPnOif/I3+dtV
+WQNnPknPO2xofqtOLf0huLQxAg8Sx4J6XRbZ65fxgMOcvmOhqqZ28PpOurf8vRhG
+cfWsi3eWt3s96oybFfvfjH19NCE4sqLxRdeI9xBpvlt67osNU9ilENfn4V0Xo1pn
+1rh+vD1Epd/vCjw+djpxofzUgYHdDfeU+qGMZ6VdcTqH+WxS0+jft+L6LrdVxpf7
+3b201q/Od/fG88nt6IOPSt6NzDh09M+qrlBzbaD5mnPl/OzWkwdZR0XHAfcWr01/
+BLg35J/IzfQpe45vOFnUf2VbR2xoXfdqgy5l8sJLKXvkd6KTTE1HOj+es+7PrTS/
+1lA8s/O7IxNpgR+mDyd8Vfr18TLwJHV5ddUbcsuO7eroinp9W/7E72HxZYaLPmmG
+rZ+eecV8Rw7fW7GjD1LD638lYv8DJ5/F5Q==
+=5LeS
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/harrsch
+
+==================================================================

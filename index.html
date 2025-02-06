@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chris's Personal Site</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>Chris Harrsch<span class="cursor"></span></h1>
+        <nav class="nav">
+            <div class="nav-item active" data-section="home">home<span class="key-hint">[1]</span></div>
+            <div class="nav-item" data-section="books">books<span class="key-hint">[2]</span></div>
+            <div class="nav-item" data-section="resume">resume<span class="key-hint">[3]</span></div>
+            <div class="nav-item" data-section="blog">blog<span class="key-hint">[4]</span></div>
+            <div class="nav-item" data-section="contact">contact<span class="key-hint">[5]</span></div>
+        </nav>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <div id="terminal-path">~/personal-site/<span id="current-section">home</span></div>
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="theme-icon">☀️</span>
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main">
+        <section id="home" class="content-section active">
+            <h2>Hail, traveler</h2>
+            <p>I'm an engineer and physicist turned Web3 builder. Experienced in digital asset custody, market
+                infrastructure,
+                and blockchain technology.
+                Currently shaping the future of digital assets at Nasdaq.</p>
+        </section>
+
+        <section id="books" class="content-section">
+            <h2>Book Recommendations</h2>
+            <div class="book-item">
+                <h3>Dune by Frank Herbert</h3>
+                <p>A masterpiece of world-building and political intrigue that explores themes of ecology, religion, and
+                    power.</p>
+            </div>
+            <div class="book-item">
+                <h3>Snow Crash by Neal Stephenson</h3>
+                <p>A cyberpunk classic that predicted many aspects of our modern digital world, including virtual
+                    reality and the metaverse.</p>
+            </div>
+            <div class="book-item">
+                <h3>The Pragmatic Programmer</h3>
+                <p>Essential reading for any software developer, filled with timeless advice about writing maintainable
+                    code and being a better programmer.</p>
+            </div>
+        </section>
+
+        <section id="resume" class="content-section">
+            <h2>Resume</h2>
+            <div class="resume-section">
+                <h3>Professional Experience</h3>
+                <div class="resume-item">
+                    <div class="resume-title">Senior Specialist, Site Reliability Engineer - Nasdaq</div>
+                    <div class="resume-date">March 2023 - Present</div>
+                    <p>Manage an AWS cloud environment participating in a multi-party computation (MPC) signing
+                        infrastructure.</p>
+                    <p>Oversee and coordinate deployments to production and UAT environments utilizing CI/CD practices
+                        (GitLab).</p>
+                    <p>Conduct in-depth troubleshooting by analyzing Kubernetes pods in K9s, reviewing Grafana logs.</p>
+                </div>
+                <div class="resume-item">
+                    <div class="resume-title">Senior Associate, Custody Operations - Gemini</div>
+                    <div class="resume-date">January 2020 - February 2023</div>
+                    <p>Responsible for the management of all digital assets on the Gemini exchange and segregated
+                        Custody product (>$30BN in May, 2021).</p>
+                    <p>Operation and management of a fleet of Hardware Security Modules (HSMs). Coordinated and
+                        participated in key cloning ceremonies for HSMs.</p>
+                </div>
+            </div>
+            <div class="resume-section">
+                <h3>Education</h3>
+                <div class="resume-item">
+                    <div class="resume-title">MS, Applied Physics - New Jersey Institute of Technology</div>
+                    <div class="resume-date">Graduated 2019</div>
+                    <p>NSF Next Generation of Geospace Grant</p>
+                </div>
+                <div class="resume-item">
+                    <div class="resume-title">BS, Electrical & Computer Engineering Technology - NJIT</div>
+                    <div class="resume-date">Graduated 2017</div>
+                </div>
+            </div>
+            <div class="resume-section">
+                <h3>Technical Skills</h3>
+                <div class="resume-skills">
+                    <span class="skill-tag">AWS</span>
+                    <span class="skill-tag">Kubernetes</span>
+                    <span class="skill-tag">CI/CD</span>
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">Linux</span>
+                    <span class="skill-tag">Git</span>
+                    <span class="skill-tag">Docker</span>
+                    <span class="skill-tag">Cybersecurity</span>
+                    <span class="skill-tag">Blockchain</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="content-section">
+            <h2>Blog</h2>
+            <article class="blog-post">
+                <h3>The Future of Web Development</h3>
+                <div class="blog-date">February 6, 2024</div>
+                <p>As we move into 2024, the web development landscape continues to evolve at a rapid pace. Here are my
+                    thoughts on the emerging trends and technologies that will shape the future of web development...
+                </p>
+            </article>
+            <article class="blog-post">
+                <h3>Building with Web Components</h3>
+                <div class="blog-date">January 15, 2024</div>
+                <p>Web Components provide a standard way to create reusable custom elements. In this post, I'll share my
+                    experience building a component library using this powerful technology...</p>
+            </article>
+        </section>
+
+        <section id="contact" class="content-section">
+            <h2>Contact</h2>
+            <p>Feel free to reach out through any of these platforms:</p>
+            <div class="social-links">
+                <a target="_blank" rel="noopener noreferrer" class="social-icon" href="https://twitter.com/DSChris"><i
+                        class="fab fa-twitter"></i></a>
+                <a target="_blank" rel="noopener noreferrer" class="social-icon" href="https://github.com/dschris"><i
+                        class="fab fa-github"></i></a>
+                <a target="_blank" rel="noopener noreferrer" class="social-icon"
+                    href="https://www.linkedin.com/in/christopher-harrsch/"><i class="fab fa-linkedin-in"></i></a>
+                <a target="_blank" rel="noopener noreferrer" class="social-icon" href="https://keybase.io/harrsch"><i
+                        class="fa-brands fa-keybase"></i></a>
+                <a class="social-icon" href="mailto:chrisharrsch@gmail.com"><i class="fa-regular fa-envelope"></i></a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Navigate with [1-5], arrows, or vim keys (h/j/k/l) | Toggle theme with 't'</p>
+    </footer>
+
+    <script>
+        const sections = ['home', 'books', 'resume', 'blog', 'contact'];
+        let currentSectionIndex = 0;
+
+        function updateActiveSection(index) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-section="${sections[index]}"]`).classList.add('active');
+
+            // Update content sections
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sections[index]).classList.add('active');
+
+            // Update terminal path
+            document.getElementById('current-section').textContent = sections[index];
+
+            currentSectionIndex = index;
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+        }
+
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            let newIndex = currentSectionIndex;
+
+            switch (e.key.toLowerCase()) {
+                case 'arrowright':
+                case 'arrowdown':
+                case 'l':
+                case 'j':
+                    newIndex = (currentSectionIndex + 1) % sections.length;
+                    break;
+                case 'arrowleft':
+                case 'arrowup':
+                case 'h':
+                case 'k':
+                    newIndex = (currentSectionIndex - 1 + sections.length) % sections.length;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                    newIndex = parseInt(e.key) - 1;
+                    break;
+                case 't':
+                    toggleTheme();
+                    return;
+            }
+
+            if (newIndex !== currentSectionIndex) {
+                e.preventDefault();
+                updateActiveSection(newIndex);
+            }
+        });
+
+        // Click navigation
+        document.querySelectorAll('.nav-item').forEach((item, index) => {
+            item.addEventListener('click', () => updateActiveSection(index));
+        });
+    </script>
+</body>
+
+</html>
