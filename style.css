@@ -389,7 +389,9 @@ p {
 
 .social-icon:hover {
     color: var(--highlight-color);
-}@media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
     body {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto 1fr auto;
@@ -437,11 +439,8 @@ p {
 
     .header {
         display: none;
-        /* Hide terminal path header on mobile to save space, or simplify? user said navbar column eats too much page. */
-        /* Actually, keeping the theme toggle might be nice. Let's keep header but simplify. */
     }
 
-    /* Re-enabling header but simplified */
     .header {
         display: block;
         padding: 1rem 2rem;
