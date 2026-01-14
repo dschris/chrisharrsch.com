@@ -39,8 +39,14 @@
         </section>
 
         <section id="books" class="content-section">
-            <h2>Book Recommendations</h2>
-            {{BOOKS_CONTENT}}
+            {{NOW_READING_CONTENT}}
+
+            <h2>Recently Read</h2>
+            <div class="reading-list">
+                {{RECENTLY_READ_CONTENT}}
+            </div>
+
+            {{READ_GRID_CONTENT}}
         </section>
 
         <section id="resume" class="content-section">
@@ -82,7 +88,7 @@
     </main>
 
     <footer class="footer">
-        <p>Navigate with [1-6], arrows, or vim keys (h/j/k/l) | Toggle theme with 't'</p>
+        <p>Navigate with [1-6], left/right arrows, or h/l | Scroll with j/k | Toggle theme with 't'</p>
     </footer>
 
     <script>
@@ -118,20 +124,31 @@
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             let newIndex = currentSectionIndex;
+            const mainContent = document.querySelector('.main');
 
             switch (e.key.toLowerCase()) {
                 case 'arrowright':
-                case 'arrowdown':
                 case 'l':
-                case 'j':
                     newIndex = (currentSectionIndex + 1) % sections.length;
                     break;
                 case 'arrowleft':
-                case 'arrowup':
                 case 'h':
-                case 'k':
                     newIndex = (currentSectionIndex - 1 + sections.length) % sections.length;
                     break;
+                case 'arrowdown':
+                case 'j':
+                    mainContent.scrollBy(0, 100);
+                    return; // Don't prevent default execution for scrolling? Or should we? Default might be window scroll, we want div scroll.
+                    // Actually, if we don't prevent default, standard arrow scrolling might work if focus is right, 
+                    // but 'j' needs manual scrolling.
+                    // Let's prevent default to avoid double scrolling or navigation.
+                    e.preventDefault();
+                    return;
+                case 'arrowup':
+                case 'k':
+                    mainContent.scrollBy(0, -100);
+                    e.preventDefault();
+                    return;
                 case '1':
                 case '2':
                 case '3':
