@@ -1,8 +1,15 @@
 {
     "experience": [
         {
+            "title": "Director of Product, Nasdaq Digital Assets",
+            "date": "March 2025 - Present",
+            "description": [
+                "Leading Nasdaq's digital assets product strategy and development."
+            ]
+        }
+        {
             "title": "Senior Specialist, Site Reliability Engineer - Nasdaq",
-            "date": "March 2023 - Present",
+            "date": "March 2023 - March 2025",
             "description": [
                 "Manage an AWS cloud environment participating in a multi-party computation (MPC) signing infrastructure.",
                 "Oversee and coordinate deployments to production and UAT environments utilizing CI/CD practices (GitLab).",
