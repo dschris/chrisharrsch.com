@@ -13,7 +13,3 @@ jobs:
       - name: Trigger Vercel Deploy Hook
         if: ${{ secrets.VERCEL_DEPLOY_HOOK }}
         run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}
-      
-      - name: Check for Secret
-        if: ${{ !secrets.VERCEL_DEPLOY_HOOK }}
-        run: echo "Warning: VERCEL_DEPLOY_HOOK secret is not set. Skipping build trigger."
