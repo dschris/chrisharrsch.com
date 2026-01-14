@@ -17,8 +17,7 @@
             <div class="nav-item" data-section="books">books<span class="key-hint">[2]</span></div>
             <div class="nav-item" data-section="resume">resume<span class="key-hint">[3]</span></div>
             <div class="nav-item" data-section="projects">projects<span class="key-hint">[4]</span></div>
-            <div class="nav-item" data-section="blog">blog<span class="key-hint">[5]</span></div>
-            <div class="nav-item" data-section="contact">contact<span class="key-hint">[6]</span></div>
+            <div class="nav-item" data-section="contact">contact<span class="key-hint">[5]</span></div>
         </nav>
     </div>
 
@@ -73,11 +72,6 @@
             {{PROJECTS_CONTENT}}
         </section>
 
-        <section id="blog" class="content-section">
-            <h2>Blog</h2>
-            {{BLOG_CONTENT}}
-        </section>
-
         <section id="contact" class="content-section">
             <h2>Contact</h2>
             <p>{{CONTACT_INTRO}}</p>
@@ -88,11 +82,11 @@
     </main>
 
     <footer class="footer">
-        <p>Navigate with [1-6], left/right arrows, or h/l | Scroll with j/k | Toggle theme with 't'</p>
+        <p>Navigate with [1-5], left/right arrows, or h/l | Scroll with j/k | Toggle theme with 't'</p>
     </footer>
 
     <script>
-        const sections = ['home', 'books', 'resume', 'projects', 'blog', 'contact'];
+        const sections = ['home', 'books', 'resume', 'projects', 'contact'];
         let currentSectionIndex = 0;
 
         function updateActiveSection(index) {
@@ -154,7 +148,6 @@
                 case '3':
                 case '4':
                 case '5':
-                case '6':
                     newIndex = parseInt(e.key) - 1;
                     break;
                 case 't':

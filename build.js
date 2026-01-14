@@ -189,7 +189,6 @@ const build = async () => {
     // const booksLocal = readJSON('books.json'); // Legacy local books
     const projects = readJSON('projects.json');
     const resume = readJSON('resume.json');
-    const blog = readJSON('blog.json');
     const contact = readJSON('contact.json');
 
     // Fetch External Data
@@ -210,7 +209,6 @@ const build = async () => {
 
     const projectsHTML = generateProjectsHTML(projects);
     const { experienceHTML, educationHTML, skillsHTML } = generateResumeHTML(resume);
-    const blogHTML = generateBlogHTML(blog);
     const { intro: contactIntro, linksHTML: contactLinksHTML } = generateContactHTML(contact);
 
     // Replace Placeholders
@@ -226,7 +224,6 @@ const build = async () => {
         .replace('{{RESUME_EXPERIENCE}}', experienceHTML)
         .replace('{{RESUME_EDUCATION}}', educationHTML)
         .replace('{{RESUME_SKILLS}}', skillsHTML)
-        .replace('{{BLOG_CONTENT}}', blogHTML)
         .replace('{{CONTACT_INTRO}}', contactIntro)
         .replace('{{CONTACT_LINKS}}', contactLinksHTML);
 
