@@ -389,4 +389,82 @@ p {
 
 .social-icon:hover {
     color: var(--highlight-color);
+}@media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+        grid-template-areas:
+            "header"
+            "sidebar"
+            "main"
+            "footer";
+        height: auto;
+    }
+
+    .sidebar {
+        padding: 1rem 2rem;
+        border-right: none;
+        border-bottom: 1px solid var(--dim-color);
+        background: var(--bg-color);
+        /* Remove image */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .sidebar h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .nav-item {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .key-hint {
+        display: none;
+    }
+
+    .header {
+        display: none;
+        /* Hide terminal path header on mobile to save space, or simplify? user said navbar column eats too much page. */
+        /* Actually, keeping the theme toggle might be nice. Let's keep header but simplify. */
+    }
+
+    /* Re-enabling header but simplified */
+    .header {
+        display: block;
+        padding: 1rem 2rem;
+        border-bottom: none;
+    }
+
+    #terminal-path {
+        display: none;
+        /* Hide path on mobile */
+    }
+
+    .header-content {
+        justify-content: flex-end;
+        /* Just theme toggle */
+    }
+
+    .main {
+        padding: 1.5rem;
+        overflow-y: visible;
+        /* Let body scroll */
+    }
+
+    .project-item {
+        padding-bottom: 2rem;
+    }
 }
