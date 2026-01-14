@@ -1,0 +1,12 @@
+[
+    {
+        "title": "The Future of Web Development",
+        "date": "February 6, 2024",
+        "excerpt": "As we move into 2024, the web development landscape continues to evolve at a rapid pace. Here are my thoughts on the emerging trends and technologies that will shape the future of web development..."
+    },
+    {
+        "title": "Building with Web Components",
+        "date": "January 15, 2024",
+        "excerpt": "Web Components provide a standard way to create reusable custom elements. In this post, I'll share my experience building a component library using this powerful technology..."
+    }
+]

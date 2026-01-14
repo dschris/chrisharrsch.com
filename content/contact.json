@@ -1,0 +1,25 @@
+{
+    "intro": "Feel free to reach out through any of these platforms:",
+    "links": [
+        {
+            "href": "https://twitter.com/DSChris",
+            "icon": "fab fa-twitter"
+        },
+        {
+            "href": "https://github.com/dschris",
+            "icon": "fab fa-github"
+        },
+        {
+            "href": "https://www.linkedin.com/in/christopher-harrsch/",
+            "icon": "fab fa-linkedin-in"
+        },
+        {
+            "href": "https://keybase.io/harrsch",
+            "icon": "fa-brands fa-keybase"
+        },
+        {
+            "href": "mailto:chrisharrsch@gmail.com",
+            "icon": "fa-regular fa-envelope"
+        }
+    ]
+}

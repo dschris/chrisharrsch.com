@@ -1,0 +1,43 @@
+{
+    "experience": [
+        {
+            "title": "Senior Specialist, Site Reliability Engineer - Nasdaq",
+            "date": "March 2023 - Present",
+            "description": [
+                "Manage an AWS cloud environment participating in a multi-party computation (MPC) signing infrastructure.",
+                "Oversee and coordinate deployments to production and UAT environments utilizing CI/CD practices (GitLab).",
+                "Conduct in-depth troubleshooting by analyzing Kubernetes pods in K9s, reviewing Grafana logs."
+            ]
+        },
+        {
+            "title": "Senior Associate, Custody Operations - Gemini",
+            "date": "January 2020 - February 2023",
+            "description": [
+                "Responsible for the management of all digital assets on the Gemini exchange and segregated Custody product (>$30BN in May, 2021).",
+                "Operation and management of a fleet of Hardware Security Modules (HSMs). Coordinated and participated in key cloning ceremonies for HSMs."
+            ]
+        }
+    ],
+    "education": [
+        {
+            "title": "MS, Applied Physics - New Jersey Institute of Technology",
+            "date": "Graduated 2019",
+            "details": "NSF Next Generation of Geospace Grant"
+        },
+        {
+            "title": "BS, Electrical & Computer Engineering Technology - NJIT",
+            "date": "Graduated 2017"
+        }
+    ],
+    "skills": [
+        "AWS",
+        "Kubernetes",
+        "CI/CD",
+        "Python",
+        "Linux",
+        "Git",
+        "Docker",
+        "Cybersecurity",
+        "Blockchain"
+    ]
+}
