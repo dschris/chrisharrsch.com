@@ -34,7 +34,7 @@
     <main class="main">
         <section id="home" class="content-section active">
             <h2>Hail, traveler</h2>
-            <p>I'm an engineer and physicist turned Web3 builder. Experienced in digital asset custody, market infrastructure, and blockchain technology. Currently shaping the future of digital assets at Nasdaq.</p>
+            <p>I am an engineer and physicist turned blockchain architect. I approach capital markets with a systems-view mindset: to build effective technology, you must first master the environment it operates in.</p><p>Currently, I lead digital asset product development at Nasdaq. Driven by a desire to understand the 'full stack' of our financial reality, my focus extends beyond the technology itself to the market structures it serves. By deconstructing the complex machinery of global finance, I apply my deep understanding of blockchain protocols to the areas where they offer genuine institutional value.</p>
         </section>
 
         <section id="books" class="content-section">
@@ -921,10 +921,7 @@
                 case 'arrowdown':
                 case 'j':
                     mainContent.scrollBy(0, 100);
-                    return; // Don't prevent default execution for scrolling? Or should we? Default might be window scroll, we want div scroll.
-                    // Actually, if we don't prevent default, standard arrow scrolling might work if focus is right, 
-                    // but 'j' needs manual scrolling.
-                    // Let's prevent default to avoid double scrolling or navigation.
+                    return;
                     e.preventDefault();
                     return;
                 case 'arrowup':

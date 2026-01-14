@@ -34,7 +34,7 @@
     <main class="main">
         <section id="home" class="content-section active">
             <h2>{{HOME_TITLE}}</h2>
-            <p>{{HOME_INTRO}}</p>
+            {{HOME_INTRO}}
         </section>
 
         <section id="books" class="content-section">
@@ -132,10 +132,7 @@
                 case 'arrowdown':
                 case 'j':
                     mainContent.scrollBy(0, 100);
-                    return; // Don't prevent default execution for scrolling? Or should we? Default might be window scroll, we want div scroll.
-                    // Actually, if we don't prevent default, standard arrow scrolling might work if focus is right, 
-                    // but 'j' needs manual scrolling.
-                    // Let's prevent default to avoid double scrolling or navigation.
+                    return;
                     e.preventDefault();
                     return;
                 case 'arrowup':

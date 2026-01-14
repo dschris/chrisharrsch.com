@@ -214,7 +214,9 @@ const build = async () => {
     // Replace Placeholders
     let output = template
         .replace('{{HOME_TITLE}}', home.title)
-        .replace('{{HOME_INTRO}}', home.intro)
+        .replace('{{HOME_INTRO}}', Array.isArray(home.intro) ?
+            home.intro.map(p => `<p>${p}</p>`).join('') :
+            `<p>${home.intro}</p>`)
         .replace('{{NOW_READING_CONTENT}}', nowReadingHTML ?
             `<div class="now-reading-section"><h3>Now Reading</h3>${nowReadingHTML}</div>` : '')
         .replace('{{RECENTLY_READ_CONTENT}}', recentlyReadHTML)
