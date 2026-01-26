@@ -3,5 +3,17 @@
         "title": "Tokenized Equities Platform Prototype",
         "link": "https://v0-tokenized-equities-platform.vercel.app/",
         "description": "A web application prototype demonstrating management of tokenized equities."
+    },
+    {
+        "title": "Personal Website",
+        "link": "https://chrisharrsch.com",
+        "github": "https://github.com/dschris/chrisharrsch.com",
+        "description": "The source code for this website, built with Node.js."
+    },
+    {
+        "title": "Token Contract Viewer",
+        "link": "https://token-contract-viewer.vercel.app/",
+        "github": "https://github.com/dschris/token-contract-viewer",
+        "description": "A web app for deploying simulated token contracts and interacting with their ABIs."
     }
 ]

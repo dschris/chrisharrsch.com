@@ -137,7 +137,10 @@ const generateReadGridHTML = (books) => {
 const generateProjectsHTML = (projects) => {
     return projects.map(project => `
             <div class="project-item">
-                <h3><a href="${project.link}" class="project-link" target="_blank" rel="noopener noreferrer">${project.title}</a></h3>
+                <h3>
+                    <a href="${project.link}" class="project-link" target="_blank" rel="noopener noreferrer">${project.title}</a>
+                    ${project.github ? `<a href="${project.github}" class="github-link" target="_blank" rel="noopener noreferrer" title="view associated repo"><i class="fab fa-github"></i></a>` : ''}
+                </h3>
                 <p>${project.description}</p>
             </div>`).join('');
 };

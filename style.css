@@ -319,6 +319,18 @@ p {
     border-bottom-style: solid;
 }
 
+.github-link {
+    color: var(--dim-color);
+    margin-left: 0.8rem;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.github-link:hover {
+    color: var(--highlight-color);
+}
+
 .blog-post {
     margin-bottom: 3rem;
 }
