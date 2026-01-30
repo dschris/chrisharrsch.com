@@ -1,9 +1,3 @@
 {
-    "rewrites": [
-        {
-            "source": "/tokenized-equities-platform/:path*",
-            "destination": "https://v0-tokenized-equities-platform.vercel.app/:path*"
-        }
-    ],
     "cleanUrls": true
 }
