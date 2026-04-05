@@ -18,6 +18,16 @@ const readJSON = (filename) => {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
+// Read all guides from content/guides/ directory
+const readGuides = () => {
+    const guidesDir = path.join(CONTENT_DIR, 'guides');
+    if (!fs.existsSync(guidesDir)) return [];
+    return fs.readdirSync(guidesDir)
+        .filter(f => f.endsWith('.json'))
+        .map(f => JSON.parse(fs.readFileSync(path.join(guidesDir, f), 'utf8')))
+        .sort((a, b) => b.date.localeCompare(a.date));
+};
+
 // Simple XML Parser Helper (Regex based for simple RSS structure)
 // Note: For production with complex XML, a library like xml2js is better, but this avoids dependencies.
 const parseXML = (xml) => {
@@ -145,6 +155,131 @@ const generateProjectsHTML = (projects) => {
             </div>`).join('');
 };
 
+const generateHomelabHTML = (homelab, guides) => {
+    // Generate rack units
+    const rackUnitsHTML = homelab.rack.map(unit => {
+        if (unit.size === 'shelf') {
+            return `
+                <div class="rack-unit size-shelf">
+                    <span class="shelf-label">${unit.name}</span>
+                </div>`;
+        }
+
+        const ledClass = unit.led === 'blue' ? 'led-blue' : 'led-green';
+        const sizeClass = `size-${unit.size}`;
+
+        // Port dots for the switch
+        let portDotsHTML = '';
+        if (unit.id === 'switch') {
+            // Randomly illuminate ~8 ports
+            const activePorts = new Set();
+            while (activePorts.size < 8) {
+                activePorts.add(Math.floor(Math.random() * 48));
+            }
+            const dots = Array.from({length: 48}, (_, i) => {
+                const isActive = activePorts.has(i);
+                return `<span class="port-dot${isActive ? ' active-port' : ''}"></span>`;
+            }).join('');
+            portDotsHTML = `<div class="port-dots">${dots}</div>`;
+        }
+
+        return `
+                <div class="rack-unit ${sizeClass}" data-equipment-id="${unit.id}"
+                     data-name="${unit.name}"
+                     data-role="${unit.role}"
+                     data-icon="${unit.icon}"
+                     data-specs='${JSON.stringify(unit.specs)}'
+                     data-services='${JSON.stringify(unit.services)}'>
+                    <span class="unit-indicator">&gt;</span>
+                    <span class="led-dot ${ledClass}"></span>
+                    <div class="unit-content">
+                        <span class="unit-name">${unit.name}</span>
+                        ${unit.role ? `<span class="unit-role">${unit.role}</span>` : ''}
+                        ${portDotsHTML}
+                    </div>
+                </div>`;
+    }).join('');
+
+    // Generate tower
+    const tower = homelab.tower;
+    const towerHTML = `
+            <div class="tower-frame">
+                <div class="tower-unit" data-equipment-id="${tower.id}"
+                     data-name="${tower.name}"
+                     data-role="${tower.role}"
+                     data-icon="${tower.icon}"
+                     data-specs='${JSON.stringify(tower.specs)}'
+                     data-services='${JSON.stringify(tower.services)}'>
+                    <span class="tower-name">${tower.name}</span>
+                    <span class="tower-role">${tower.role.split(' — ')[0]}</span>
+                    <div class="tower-gpu-glow"></div>
+                </div>
+            </div>
+            <div class="tower-label">tower</div>`;
+
+    // Generate guides
+    const guidesHTML = guides.map(guide => {
+        const tagsHTML = guide.tags.map(tag => `<span class="guide-tag">${tag}</span>`).join('');
+
+        const sectionsHTML = guide.sections.map(section => {
+            let bodyHTML = '';
+
+            if (section.content) {
+                bodyHTML += `<div class="guide-phase-content">${section.content.map(p => `<p>${p}</p>`).join('')}</div>`;
+            }
+
+            if (section.steps) {
+                bodyHTML += `<ol class="guide-steps">${section.steps.map(step => `<li>${step}</li>`).join('')}</ol>`;
+            }
+
+            return `
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">${section.heading}</h3>
+                        ${section.subtitle ? `<div class="guide-phase-subtitle">${section.subtitle}</div>` : ''}
+                        ${bodyHTML}
+                    </div>`;
+        }).join('');
+
+        return `
+                <details class="guide-item">
+                    <summary class="guide-summary">
+                        <span class="guide-marker">▸</span>
+                        <span class="guide-title">${guide.title}</span>
+                        <span class="guide-date">${guide.date}</span>
+                        <div class="guide-tags">${tagsHTML}</div>
+                    </summary>
+                    <div class="guide-body">
+                        ${sectionsHTML}
+                    </div>
+                </details>`;
+    }).join('');
+
+    // Compose full homelab HTML
+    return `
+            <p class="homelab-intro">hover or click a unit to inspect // tap on mobile</p>
+            <div class="homelab-diagram">
+                <div>
+                    ${towerHTML}
+                </div>
+                <div>
+                    <div class="rack-frame">
+                        <div class="rack-brand">&nbsp;</div>
+                        ${rackUnitsHTML}
+                    </div>
+                    <div class="rack-label">rack</div>
+                </div>
+            </div>
+
+            <div class="equipment-detail-panel" id="equipment-detail">
+                <span class="detail-empty">← select equipment to inspect</span>
+            </div>
+
+            <div class="guides-section">
+                <h2>Configuration Guides</h2>
+                ${guidesHTML}
+            </div>`;
+};
+
 const generateResumeHTML = (resume) => {
     const experienceHTML = resume.experience.map(exp => `
                 <div class="resume-item">
@@ -191,6 +326,8 @@ const build = async () => {
     const home = readJSON('home.json');
     // const booksLocal = readJSON('books.json'); // Legacy local books
     const projects = readJSON('projects.json');
+    const homelab = readJSON('homelab.json');
+    const guides = readGuides();
     const resume = readJSON('resume.json');
     const contact = readJSON('contact.json');
 
@@ -211,6 +348,7 @@ const build = async () => {
     const readGridHTML = generateReadGridHTML(readBooks);
 
     const projectsHTML = generateProjectsHTML(projects);
+    const homelabHTML = generateHomelabHTML(homelab, guides);
     const { experienceHTML, educationHTML, skillsHTML } = generateResumeHTML(resume);
     const { intro: contactIntro, linksHTML: contactLinksHTML } = generateContactHTML(contact);
 
@@ -226,6 +364,7 @@ const build = async () => {
         .replace('{{READ_GRID_CONTENT}}', readGridHTML ?
             `<section id="recommendations"><h2>Read</h2><div class="recommendations-grid">${readGridHTML}</div></section>` : '')
         .replace('{{PROJECTS_CONTENT}}', projectsHTML)
+        .replace('{{HOMELAB_CONTENT}}', homelabHTML)
         .replace('{{RESUME_EXPERIENCE}}', experienceHTML)
         .replace('{{RESUME_EDUCATION}}', educationHTML)
         .replace('{{RESUME_SKILLS}}', skillsHTML)

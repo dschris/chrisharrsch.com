@@ -1,0 +1,88 @@
+{
+  "id": "pihole-tailscale-adblocking",
+  "title": "Global Ad-Blocking via Unraid, Pi-hole, and Tailscale",
+  "date": "2026-04-04",
+  "tags": [
+    "networking",
+    "dns",
+    "vpn",
+    "unraid"
+  ],
+  "sections": [
+    {
+      "heading": "Architecture Overview",
+      "content": [
+        "This setup provides network-wide ad-blocking and custom DNS resolution to all roaming devices connected to a Tailscale mesh network.",
+        "<strong>The Design Choice:</strong> We use <strong>Host-Level Subnet Routing</strong> rather than a Tailscale Docker Sidecar.",
+        "<em>Why:</em> When assigning a Docker container a custom <code>br0</code> (MACVLAN) IP on Unraid, Docker's virtual network adapter often fails to correctly route Tailscale's internal IPv6 MagicDNS traffic, causing infinite DNS loops or timeouts on Windows clients. Routing the tunnel directly through the Unraid host's native network stack bypasses this restriction entirely."
+      ]
+    },
+    {
+      "heading": "Phase 1: Unraid Host Preparation",
+      "subtitle": "The most critical step. By default, Unraid isolates the host server from talking to containers on custom networks. We must disable this isolation so Tailscale (running on the host) can reach the Pi-hole (running on br0).",
+      "steps": [
+        "Navigate to your Unraid dashboard and go to <strong>Settings</strong> &gt; <strong>Docker</strong>.",
+        "Toggle <strong>Enable Docker</strong> to <strong>No</strong> and click <strong>Apply</strong> (you must stop the service to edit core settings).",
+        "Switch the UI to <strong>Advanced View</strong> (toggle in the top right).",
+        "Locate <strong>Host access to custom networks</strong> and change it to <strong>Enabled</strong>.",
+        "Toggle <strong>Enable Docker</strong> back to <strong>Yes</strong> and click <strong>Apply</strong>."
+      ]
+    },
+    {
+      "heading": "Phase 2: Host-Level Tailscale Configuration",
+      "subtitle": "We need to configure the Unraid host's Tailscale node to advertise the subnet where the Pi-hole will live.",
+      "steps": [
+        "Open the Unraid Terminal.",
+        "Execute the Tailscale <code>up</code> command, specifically appending the <code>--advertise-routes</code> flag for your <code>br0</code> subnet.",
+        "<em>Command:</em> <code>tailscale up --advertise-routes=10.0.10.2/232</code>",
+        "<em>(Note: You can make this more permissive to include more IPs in the range using <code>/24</code> if preferred, but <code>/32</code> covers just the single IP). Multiple single IPs can be advertised by using <code>--advertise-routes=10.0.10.2/32,10.0.10.3/32</code></em>"
+      ]
+    },
+    {
+      "heading": "Phase 3: Pi-hole Docker Deployment",
+      "subtitle": "Deploying the DNS server. This container remains purely local and does not spin up its own Tailscale instance.",
+      "steps": [
+        "In Unraid, go to the <strong>Docker</strong> tab and add/edit the Pi-hole container.",
+        "Apply the following core network configurations:",
+        "&nbsp;&nbsp;• <strong>Network Type:</strong> <code>Custom : br0</code>",
+        "&nbsp;&nbsp;• <strong>Fixed IP address:</strong> <code>10.0.10.2</code>",
+        "&nbsp;&nbsp;• <strong>Use Tailscale (Sidecar):</strong> <code>OFF</code>",
+        "Ensure ports <code>53</code> (TCP/UDP) and <code>80</code> (TCP) are mapped correctly.",
+        "Click <strong>Apply</strong> to build and start the container.",
+        "Open the Pi-hole Web UI (<code>http://10.0.10.2/admin</code>). (Note: You may need to set the password by opening a console to the container and running <code>pihole setpassword [PASSWORD]</code>).",
+        "Go to <strong>Settings</strong> &gt; <strong>DNS</strong>.",
+        "Under <strong>Interface settings</strong>, select <strong>Permit all origins</strong>. <em>(Required because queries will be arriving from <code>100.x</code> Tailscale IPs, not just the local <code>10.0</code> subnet).</em>",
+        "Ensure your Upstream DNS Servers are set strictly to public providers (e.g., Cloudflare <code>1.1.1.1</code>, Google <code>8.8.8.8</code>). Do not point upstream to your local router."
+      ]
+    },
+    {
+      "heading": "Phase 4: Tailscale Admin Console",
+      "subtitle": "Connecting the mesh network to the newly advertised route and enforcing the DNS policy.",
+      "steps": [
+        "Log into the <strong>Tailscale Admin Console</strong> on the web.",
+        "<strong>Approve the Route:</strong>",
+        "&nbsp;&nbsp;• Go to the <strong>Machines</strong> tab and locate your Unraid server.",
+        "&nbsp;&nbsp;• Click the three-dot menu and select <strong>Edit route settings</strong>.",
+        "&nbsp;&nbsp;• Toggle the <code>10.0.10.2/32</code> subnet route to <strong>ON</strong>.",
+        "<strong>Enforce Global DNS:</strong>",
+        "&nbsp;&nbsp;• Navigate to the <strong>DNS</strong> tab.",
+        "&nbsp;&nbsp;• Under <strong>Nameservers</strong>, click <strong>Add nameserver</strong> &gt; <strong>Custom</strong>.",
+        "&nbsp;&nbsp;• Enter the exact local IPv4 address of the Pi-hole: <code>10.0.10.2</code>.",
+        "&nbsp;&nbsp;• Toggle <strong>Override local DNS</strong> to <strong>ON</strong>.",
+        "&nbsp;&nbsp;• Ensure <strong>MagicDNS</strong> is enabled."
+      ]
+    },
+    {
+      "heading": "Phase 5: Client-Side Troubleshooting (Windows)",
+      "subtitle": "Windows OS has an aggressive tendency to prefer local IPv6 DNS servers (provided by local Wi-Fi routers) over the Tailscale IPv4 tunnel, which can cause DNS timeouts even when the architecture is configured correctly.",
+      "steps": [
+        "If a Windows machine refuses to resolve hostnames after completing Phases 1-4:",
+        "<strong>Flush the OS Cache:</strong>",
+        "&nbsp;&nbsp;• Open an Administrator Command Prompt and run: <code>ipconfig /flushdns</code>",
+        "&nbsp;&nbsp;• Check the DNS server you are using by running <code>nslookup</code>",
+        "&nbsp;&nbsp;• Run <code>ipconfig /release</code> and <code>ipconfig /renew</code> to force the OS to pick up the new DNS settings.",
+        "&nbsp;&nbsp;• Restart the Tailscale client app."
+      ]
+    }
+  ]
+}

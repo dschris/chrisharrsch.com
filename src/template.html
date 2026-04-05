@@ -17,7 +17,8 @@
             <div class="nav-item" data-section="books">books<span class="key-hint">[2]</span></div>
             <div class="nav-item" data-section="resume">resume<span class="key-hint">[3]</span></div>
             <div class="nav-item" data-section="projects">projects<span class="key-hint">[4]</span></div>
-            <div class="nav-item" data-section="contact">contact<span class="key-hint">[5]</span></div>
+            <div class="nav-item" data-section="homelab">homelab<span class="key-hint">[5]</span></div>
+            <div class="nav-item" data-section="contact">contact<span class="key-hint">[6]</span></div>
         </nav>
     </div>
 
@@ -72,6 +73,11 @@
             {{PROJECTS_CONTENT}}
         </section>
 
+        <section id="homelab" class="content-section">
+            <h2>Homelab</h2>
+            {{HOMELAB_CONTENT}}
+        </section>
+
         <section id="contact" class="content-section">
             <h2>Contact</h2>
             <p>{{CONTACT_INTRO}}</p>
@@ -82,11 +88,11 @@
     </main>
 
     <footer class="footer">
-        <p>Navigate with [1-5], left/right arrows, or h/l | Scroll with j/k | Toggle theme with 't'</p>
+        <p>Navigate with [1-6], left/right arrows, or h/l | Scroll with j/k | Toggle theme with 't'</p>
     </footer>
 
     <script>
-        const sections = ['home', 'books', 'resume', 'projects', 'contact'];
+        const sections = ['home', 'books', 'resume', 'projects', 'homelab', 'contact'];
         let currentSectionIndex = 0;
 
         function updateActiveSection(index) {
@@ -145,6 +151,7 @@
                 case '3':
                 case '4':
                 case '5':
+                case '6':
                     newIndex = parseInt(e.key) - 1;
                     break;
                 case 't':
@@ -161,6 +168,58 @@
         // Click navigation
         document.querySelectorAll('.nav-item').forEach((item, index) => {
             item.addEventListener('click', () => updateActiveSection(index));
+        });
+
+        // ── Homelab Equipment Interaction ──
+        let activeEquipment = null;
+
+        function showEquipmentDetail(el) {
+            const panel = document.getElementById('equipment-detail');
+            if (!panel || !el) return;
+
+            const name = el.dataset.name;
+            const role = el.dataset.role;
+            const icon = el.dataset.icon;
+            const specs = JSON.parse(el.dataset.specs || '[]');
+            const services = JSON.parse(el.dataset.services || '[]');
+
+            // Update active state
+            document.querySelectorAll('.rack-unit.active, .tower-unit.active').forEach(u => u.classList.remove('active'));
+            el.classList.add('active');
+            activeEquipment = el.dataset.equipmentId;
+
+            let specsHTML = specs.map(s =>
+                `<div class="detail-spec-row"><span class="spec-label">${s.label}</span><span class="spec-value">${s.value}</span></div>`
+            ).join('');
+
+            let servicesHTML = '';
+            if (services.length > 0) {
+                servicesHTML = `
+                    <div class="detail-services">
+                        <span class="detail-services-label">running services:</span>
+                        ${services.map(s => `<span class="service-tag"><i class="${s.icon}"></i> ${s.name}</span>`).join('')}
+                    </div>`;
+            }
+
+            panel.innerHTML = `
+                <div class="detail-header">
+                    ${icon ? `<span class="detail-icon"><i class="${icon}"></i></span>` : ''}
+                    <div class="detail-title-group">
+                        <div class="detail-name">${name}</div>
+                        ${role ? `<div class="detail-role">${role}</div>` : ''}
+                    </div>
+                </div>
+                <div class="detail-specs">${specsHTML}</div>
+                ${servicesHTML}`;
+        }
+
+        // Attach event listeners to equipment units
+        document.querySelectorAll('[data-equipment-id]').forEach(el => {
+            el.addEventListener('mouseenter', () => showEquipmentDetail(el));
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showEquipmentDetail(el);
+            });
         });
     </script>
 </body>

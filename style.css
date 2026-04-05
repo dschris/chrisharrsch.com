@@ -331,6 +331,533 @@ p {
     color: var(--highlight-color);
 }
 
+/* ─── Homelab Section ─── */
+
+.homelab-intro {
+    color: var(--dim-color);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.homelab-diagram {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+/* Tower (Donnager) */
+.tower-frame {
+    width: 120px;
+    min-height: 240px;
+    border: 2px solid var(--dim-color);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.tower-unit {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    text-align: center;
+}
+
+.tower-unit:hover,
+.tower-unit.active {
+    background: rgba(100, 200, 220, 0.06);
+    box-shadow: inset 0 0 20px rgba(100, 200, 220, 0.08), 0 0 15px rgba(100, 200, 220, 0.1);
+}
+
+.tower-brand {
+    font-size: 0.55rem;
+    color: var(--dim-color);
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+}
+
+.tower-name {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.tower-role {
+    font-size: 0.6rem;
+    color: var(--dim-color);
+}
+
+.tower-gpu-glow {
+    width: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #4ade80, transparent);
+    border-radius: 2px;
+    margin-top: 1rem;
+    opacity: 0.7;
+    animation: gpuPulse 3s ease-in-out infinite;
+}
+
+@keyframes gpuPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; box-shadow: 0 0 8px rgba(74, 222, 128, 0.5); }
+}
+
+.tower-label {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--dim-color);
+    margin-top: 0.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Rack */
+.rack-frame {
+    flex: 1;
+    max-width: 400px;
+    border: 2px solid var(--dim-color);
+    border-radius: 4px;
+    position: relative;
+    transition: border-color 0.3s ease;
+}
+
+.rack-brand {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--dim-color);
+    padding: 0.4rem;
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--dim-color);
+    opacity: 0.5;
+}
+
+.rack-unit {
+    border-bottom: 1px solid var(--dim-color);
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.rack-unit:last-child {
+    border-bottom: none;
+}
+
+.rack-unit:hover,
+.rack-unit.active {
+    background: rgba(100, 200, 220, 0.06);
+    box-shadow: inset 0 0 20px rgba(100, 200, 220, 0.08), 0 0 15px rgba(100, 200, 220, 0.1);
+}
+
+.rack-unit.active .unit-indicator {
+    opacity: 1;
+}
+
+.unit-indicator {
+    font-size: 0.7rem;
+    color: var(--highlight-color);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    width: 10px;
+    flex-shrink: 0;
+}
+
+.rack-unit:hover .unit-indicator {
+    opacity: 0.5;
+}
+
+.rack-unit.active .unit-indicator {
+    opacity: 1;
+    animation: blink 1s step-end infinite;
+}
+
+/* Unit sizes */
+.rack-unit.size-1u {
+    min-height: 36px;
+}
+
+.rack-unit.size-2u {
+    min-height: 60px;
+}
+
+.rack-unit.size-4u {
+    min-height: 110px;
+}
+
+.rack-unit.size-shelf {
+    min-height: 32px;
+    cursor: default;
+    justify-content: center;
+}
+
+.rack-unit.size-shelf:hover {
+    background: none;
+    box-shadow: none;
+}
+
+.unit-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.unit-name {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.unit-role {
+    font-size: 0.6rem;
+    color: var(--dim-color);
+}
+
+.shelf-label {
+    font-size: 0.7rem;
+    color: var(--dim-color);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    text-align: center;
+    width: 100%;
+}
+
+/* LED indicators */
+.led-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.led-green {
+    background: #4ade80;
+    box-shadow: 0 0 4px rgba(74, 222, 128, 0.6);
+    animation: ledPulse 4s ease-in-out infinite;
+}
+
+.led-blue {
+    background: #60a5fa;
+    box-shadow: 0 0 4px rgba(96, 165, 250, 0.6);
+    animation: ledPulse 4s ease-in-out infinite 1s;
+}
+
+@keyframes ledPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Port dots for switch */
+.port-dots {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 2px;
+    margin-top: 0.2rem;
+}
+
+.port-dot {
+    width: 3px;
+    height: 3px;
+    background: var(--dim-color);
+    border-radius: 1px;
+    opacity: 0.4;
+}
+
+.port-dot.active-port {
+    background: #4ade80;
+    opacity: 0.8;
+}
+
+.rack-label {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--dim-color);
+    margin-top: 0.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Detail Panel */
+.equipment-detail-panel {
+    border: 1px solid var(--dim-color);
+    border-radius: 4px;
+    padding: 1.2rem;
+    margin-bottom: 2.5rem;
+    transition: all 0.3s ease;
+    min-height: 60px;
+}
+
+.detail-empty {
+    color: var(--dim-color);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.detail-icon {
+    font-size: 1.2rem;
+    color: var(--dim-color);
+    width: 30px;
+    text-align: center;
+}
+
+.detail-title-group {
+    flex: 1;
+}
+
+.detail-name {
+    font-size: 1rem;
+    color: var(--highlight-color);
+    font-weight: bold;
+}
+
+.detail-role {
+    font-size: 0.8rem;
+    color: var(--dim-color);
+}
+
+.detail-specs {
+    margin-bottom: 1rem;
+}
+
+.detail-spec-row {
+    display: flex;
+    gap: 1rem;
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px dotted rgba(128, 128, 128, 0.2);
+}
+
+.detail-spec-row:last-child {
+    border-bottom: none;
+}
+
+.spec-label {
+    color: var(--dim-color);
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.spec-value {
+    color: var(--text-color);
+}
+
+.detail-services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.detail-services-label {
+    font-size: 0.75rem;
+    color: var(--dim-color);
+    width: 100%;
+    margin-bottom: 0.2rem;
+}
+
+.service-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(128, 128, 128, 0.15);
+    color: var(--text-color);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.service-tag i {
+    font-size: 0.7rem;
+    color: var(--dim-color);
+}
+
+/* ─── Guides Section ─── */
+
+.guides-section {
+    margin-top: 3rem;
+    border-top: 1px solid var(--dim-color);
+    padding-top: 2rem;
+}
+
+.guides-section > h2 {
+    margin-bottom: 1.5rem;
+}
+
+.guide-item {
+    margin-bottom: 1rem;
+    border: 1px solid var(--dim-color);
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.guide-item[open] {
+    border-color: var(--text-color);
+}
+
+.guide-summary {
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    list-style: none;
+    transition: background 0.2s ease;
+    user-select: none;
+}
+
+.guide-summary::-webkit-details-marker {
+    display: none;
+}
+
+.guide-summary::marker {
+    content: '';
+}
+
+.guide-summary:hover {
+    background: rgba(128, 128, 128, 0.05);
+}
+
+.guide-marker {
+    color: var(--dim-color);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    width: 12px;
+}
+
+.guide-item[open] .guide-marker {
+    transform: rotate(90deg);
+}
+
+.guide-title {
+    flex: 1;
+    font-size: 0.95rem;
+    color: var(--highlight-color);
+    font-weight: bold;
+}
+
+.guide-date {
+    font-size: 0.75rem;
+    color: var(--dim-color);
+    flex-shrink: 0;
+}
+
+.guide-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.guide-tag {
+    font-size: 0.65rem;
+    color: var(--dim-color);
+    background: rgba(128, 128, 128, 0.1);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    border: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.guide-body {
+    padding: 0 1.5rem 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.guide-phase {
+    margin-bottom: 2rem;
+}
+
+.guide-phase:last-child {
+    margin-bottom: 0;
+}
+
+.guide-phase-heading {
+    font-size: 1rem;
+    color: var(--highlight-color);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px dotted var(--dim-color);
+}
+
+.guide-phase-subtitle {
+    font-size: 0.85rem;
+    color: var(--dim-color);
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.guide-phase-content p {
+    margin-bottom: 0.8rem;
+}
+
+.guide-steps {
+    list-style: none;
+    counter-reset: step-counter;
+    padding-left: 0;
+}
+
+.guide-steps li {
+    counter-increment: step-counter;
+    padding: 0.4rem 0 0.4rem 2rem;
+    position: relative;
+    border-left: 1px solid rgba(128, 128, 128, 0.2);
+    margin-left: 0.5rem;
+}
+
+.guide-steps li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: -0.5rem;
+    top: 0.4rem;
+    width: 1rem;
+    height: 1rem;
+    background: var(--bg-color);
+    border: 1px solid var(--dim-color);
+    border-radius: 50%;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dim-color);
+}
+
+.guide-body code {
+    background: rgba(128, 128, 128, 0.15);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-family: var(--font-mono);
+    color: var(--highlight-color);
+}
+
+.guide-body strong {
+    font-weight: bold;
+    color: var(--highlight-color);
+}
+
 .blog-post {
     margin-bottom: 3rem;
 }
@@ -477,5 +1004,47 @@ p {
 
     .project-item {
         padding-bottom: 2rem;
+    }
+
+    .homelab-diagram {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tower-frame {
+        width: 100%;
+        min-height: 80px;
+        flex-direction: row;
+    }
+
+    .tower-unit {
+        flex-direction: row;
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+        text-align: left;
+    }
+
+    .tower-gpu-glow {
+        display: none;
+    }
+
+    .rack-frame {
+        max-width: 100%;
+    }
+
+    .guide-tags {
+        display: none;
+    }
+
+    .guide-date {
+        display: none;
+    }
+
+    .guide-body {
+        padding: 0 1rem 1rem;
+    }
+
+    .guide-steps li {
+        padding-left: 1.5rem;
     }
 }

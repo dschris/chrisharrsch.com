@@ -1,0 +1,148 @@
+{
+  "rack": [
+    {
+      "id": "dream-machine",
+      "name": "Ubiquiti Dream Machine Pro",
+      "role": "Network Gateway",
+      "icon": "fas fa-network-wired",
+      "size": "1u",
+      "specs": [
+        {
+          "label": "Type",
+          "value": "Network Controller / Gateway / Firewall"
+        },
+        {
+          "label": "Network",
+          "value": "IDS/IPS, VLAN, VPN Server"
+        }
+      ],
+      "services": []
+    },
+    {
+      "id": "switch",
+      "name": "Ubiquiti 48-Port Switch",
+      "role": "Managed Switch",
+      "icon": "fas fa-ethernet",
+      "size": "1u",
+      "specs": [
+        {
+          "label": "Type",
+          "value": "48-Port Managed PoE Switch"
+        },
+        {
+          "label": "Uplink",
+          "value": "SFP+"
+        }
+      ],
+      "services": []
+    },
+    {
+      "id": "canterbury",
+      "name": "Canterbury",
+      "role": "Unraid NAS",
+      "icon": "fas fa-server",
+      "size": "4u",
+      "led": "blue",
+      "specs": [
+        {
+          "label": "CPU",
+          "value": "Intel Core Ultra 5 245K (14-core)"
+        },
+        {
+          "label": "RAM",
+          "value": "32GB DDR5-6000"
+        },
+        {
+          "label": "Storage",
+          "value": "3× 24TB IronWolf Pro"
+        },
+        {
+          "label": "Cache",
+          "value": "500GB NVMe"
+        },
+        {
+          "label": "OS",
+          "value": "Unraid"
+        },
+        {
+          "label": "Chassis",
+          "value": "Sliger CX3701"
+        }
+      ],
+      "services": [
+        {
+          "name": "Nextcloud",
+          "icon": "fas fa-cloud"
+        },
+        {
+          "name": "Pi-hole",
+          "icon": "fas fa-shield-halved"
+        }
+      ]
+    },
+    {
+      "id": "ups",
+      "name": "CyberPower UPS + PDU",
+      "role": "Power Protection",
+      "icon": "fas fa-bolt",
+      "size": "2u",
+      "specs": [
+        {
+          "label": "Type",
+          "value": "Uninterruptible Power Supply + Power Distribution"
+        },
+        {
+          "label": "Protection",
+          "value": "1500VA / 1000W - Surge, Brownout, Battery Backup"
+        }
+      ],
+      "services": []
+    }
+  ],
+  "tower": {
+    "id": "donnager",
+    "name": "Donnager",
+    "role": "Dell Precision T7920 — Compute Workhorse",
+    "icon": "fas fa-microchip",
+    "specs": [
+      {
+        "label": "CPU",
+        "value": "2× Xeon Gold 6133 (80 cores)"
+      },
+      {
+        "label": "RAM",
+        "value": "128GB"
+      },
+      {
+        "label": "GPU",
+        "value": "RTX 2070 Super XC Ultra"
+      },
+      {
+        "label": "Storage",
+        "value": "3× 18TB HDDs + 1TB SSD"
+      },
+      {
+        "label": "OS",
+        "value": "Unraid"
+      },
+      {
+        "label": "Chassis",
+        "value": "Dell Precision T7920"
+      }
+    ],
+    "services": [
+      {
+        "name": "Ollama",
+        "icon": "fas fa-brain"
+      },
+      {
+        "name": "ComfyUI",
+        "icon": "fas fa-palette"
+      },
+      {
+        "name": "Hermes",
+        "icon": "fas fa-comments"
+      }
+    ]
+  }
+}
