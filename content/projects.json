@@ -10,5 +10,10 @@
         "link": "https://token-contract-viewer.vercel.app/",
         "github": "https://github.com/dschris/token-contract-viewer",
         "description": "A web app for deploying simulated token contracts and interacting with their ABIs."
+    },
+    {
+        "title": "Digital Transfer Agent Demo",
+        "link": "https://tokenizedequitiesplatform.vercel.app",
+        "description": "The Digital Transfer Agent is a tokenized equities issuance and management platform that demonstrates how traditional securities operations (listing, transfer agency, corporate actions, and shareholder services) can be represented on-chain using ERC-20-compatible token contracts."
     }
 ]
