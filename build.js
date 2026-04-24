@@ -300,8 +300,10 @@ const generateHomelabHTML = (homelab, guides) => {
                     </div>
                 </div>
                 <div class="homelab-divider"></div>
-                <div class="equipment-detail-panel" id="equipment-detail">
-                    <span class="detail-empty">← select equipment to inspect</span>
+                <div class="equipment-detail-panel">
+                    <div class="equipment-detail-inner" id="equipment-detail">
+                        <span class="detail-empty">← select equipment to inspect</span>
+                    </div>
                 </div>
             </div>
 
