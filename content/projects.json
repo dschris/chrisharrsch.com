@@ -3,17 +3,21 @@
         "title": "Personal Website",
         "link": "https://chrisharrsch.com",
         "github": "https://github.com/dschris/chrisharrsch.com",
+        "visibility": "public",
         "description": "The source code for this website, built with Node.js."
     },
     {
         "title": "Token Contract Viewer",
         "link": "https://token-contract-viewer.vercel.app/",
         "github": "https://github.com/dschris/token-contract-viewer",
+        "visibility": "public",
         "description": "A web app for deploying simulated token contracts and interacting with their ABIs."
     },
     {
         "title": "Digital Transfer Agent Demo",
-        "link": "https://tokenizedequitiesplatform.vercel.app",
+        "link": "https://digitaldemo.chrisharrsch.com",
+        "github": "https://github.com/dschris/tokenized-equities-full-demo-env",
+        "visibility": "private",
         "description": "The Digital Transfer Agent is a tokenized equities issuance and management platform that demonstrates how traditional securities operations (listing, transfer agency, corporate actions, and shareholder services) can be represented on-chain using ERC-20-compatible token contracts."
     }
 ]

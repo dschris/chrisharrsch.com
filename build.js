@@ -145,14 +145,43 @@ const generateReadGridHTML = (books) => {
 };
 
 const generateProjectsHTML = (projects) => {
-    return projects.map(project => `
+    const publicProjects = projects.filter(p => p.visibility !== 'private');
+    const privateProjects = projects.filter(p => p.visibility === 'private');
+
+    const renderProject = (project) => {
+        const isPrivate = project.visibility === 'private';
+        const lockIcon = isPrivate
+            ? '<i class="fas fa-lock lock-icon"></i>'
+            : '';
+
+        let githubHtml = '';
+        if (project.github) {
+            githubHtml = `<a href="${project.github}" class="github-link" target="_blank" rel="noopener noreferrer" title="view associated repo"><i class="fab fa-github"></i></a>${lockIcon}`;
+        }
+
+        return `
             <div class="project-item">
                 <h3>
                     <a href="${project.link}" class="project-link" target="_blank" rel="noopener noreferrer">${project.title}</a>
-                    ${project.github ? `<a href="${project.github}" class="github-link" target="_blank" rel="noopener noreferrer" title="view associated repo"><i class="fab fa-github"></i></a>` : ''}
+                    ${githubHtml}
                 </h3>
                 <p>${project.description}</p>
-            </div>`).join('');
+            </div>`;
+    };
+
+    let html = '';
+
+    if (publicProjects.length > 0) {
+        html += '\n            <div class="projects-divider">public</div>';
+        html += publicProjects.map(renderProject).join('');
+    }
+
+    if (privateProjects.length > 0) {
+        html += '\n            <div class="projects-divider">private / by request</div>';
+        html += privateProjects.map(renderProject).join('');
+    }
+
+    return html;
 };
 
 const generateHomelabHTML = (homelab, guides) => {
@@ -257,21 +286,23 @@ const generateHomelabHTML = (homelab, guides) => {
     // Compose full homelab HTML
     return `
             <p class="homelab-intro">hover or click a unit to inspect // tap on mobile</p>
-            <div class="homelab-diagram">
-                <div>
-                    ${towerHTML}
-                </div>
-                <div>
-                    <div class="rack-frame">
-                        <div class="rack-brand">&nbsp;</div>
-                        ${rackUnitsHTML}
+            <div class="homelab-layout">
+                <div class="homelab-diagram">
+                    <div>
+                        ${towerHTML}
                     </div>
-                    <div class="rack-label">rack</div>
+                    <div>
+                        <div class="rack-frame">
+                            <div class="rack-brand">&nbsp;</div>
+                            ${rackUnitsHTML}
+                        </div>
+                        <div class="rack-label">rack</div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="equipment-detail-panel" id="equipment-detail">
-                <span class="detail-empty">← select equipment to inspect</span>
+                <div class="homelab-divider"></div>
+                <div class="equipment-detail-panel" id="equipment-detail">
+                    <span class="detail-empty">← select equipment to inspect</span>
+                </div>
             </div>
 
             <div class="guides-section">
