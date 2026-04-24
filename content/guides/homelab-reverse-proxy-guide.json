@@ -1,0 +1,231 @@
+{
+  "id": "homelab-reverse-proxy-ddns",
+  "title": "Self-Hosted Reverse Proxy with Cloudflare DDNS",
+  "date": "2026-04-23",
+  "tags": [
+    "networking",
+    "dns",
+    "unraid",
+    "cloudflare",
+    "nginx",
+    "self-hosting"
+  ],
+  "sections": [
+    {
+      "heading": "Architecture Overview",
+      "content": [
+        "This setup exposes self-hosted applications running on an server to the public internet via custom subdomains, with automatic dynamic DNS updates, SSL termination, and optional user authentication via Clerk.",
+        "<strong>Traffic flow:</strong> Public internet → Cloudflare edge (proxy + DDoS shield) → Home router (port forward) → Nginx Proxy Manager (NPM) → Individual app containers.",
+        "<strong>Key design decisions:</strong>",
+        "&nbsp;&nbsp;• A single wildcard A record (<code>*.yourdomain.com</code>) in Cloudflare points to your home IP. This means you never need to touch Cloudflare DNS when adding a new app — NPM is the only place routing is managed.",
+        "&nbsp;&nbsp;• NPM runs in <strong>Host network mode</strong> so it can bind directly to ports 80 and 443. This requires server's own web UI to be moved off those ports first.",
+        "&nbsp;&nbsp;• The Cloudflare DDNS container maintains the wildcard A record automatically as your home IP changes. It makes outbound API calls only and uses no ports.",
+        "&nbsp;&nbsp;• SSL is terminated at NPM using a <code>*.yourdomain.com</code> Let's Encrypt wildcard certificate issued via DNS challenge (not HTTP challenge), so no port 80 exposure is required for cert issuance.",
+        "<strong>Note on local access:</strong> Accessing your public subdomains from inside your own network may not work depending on your ISP gateway and router configuration. The two most common causes are ISP-level port blocking (affects all connections) and hairpin NAT limitations on consumer routers (affects local connections only). See the Troubleshooting Reference and Operational Notes sections for details and workarounds."
+      ]
+    },
+    {
+      "heading": "Prerequisites",
+      "content": [
+        "Before starting, confirm the following:",
+        "&nbsp;&nbsp;• You own a domain name registered with any registrar (e.g. Namecheap, GoDaddy, Google Domains)",
+        "&nbsp;&nbsp;• You have a Cloudflare account (free tier is sufficient)",
+        "&nbsp;&nbsp;• Your server has Nginx Proxy Manager available to install as a Docker container",
+        "&nbsp;&nbsp;• Your router supports port forwarding",
+        "&nbsp;&nbsp;• Your ISP does not block inbound ports 80 and 443 at the gateway level. Check your ISP modem or gateway admin page before starting — many ISPs block these ports by default and must be explicitly opened in the ISP equipment's interface, separate from your router's port forwarding rules.",
+        "&nbsp;&nbsp;• You have no static public IP (hence the need for DDNS)"
+      ]
+    },
+    {
+      "heading": "Phase 1: Move DNS to Cloudflare",
+      "subtitle": "Your current registrar remains where your domain is registered, but Cloudflare becomes your authoritative DNS provider. This is required for the DDNS updater and gives you the Cloudflare proxy as a free DDoS/IP-hiding layer.",
+      "steps": [
+        "<strong>Add your domain to Cloudflare:</strong> Log in to dash.cloudflare.com → Add a site → enter your domain name → choose the Free plan.",
+        "Cloudflare will scan and import your existing DNS records. Review them carefully and keep any records for services you are already running (e.g. a hosted website, email records, or other subdomains).",
+        "Cloudflare will give you two nameservers (e.g. <code>nina.ns.cloudflare.com</code> and <code>otto.ns.cloudflare.com</code>). Copy these.",
+        "<strong>Point your registrar to Cloudflare nameservers:</strong> Log in to your domain registrar, find the nameserver settings for your domain, switch to custom nameservers, and enter both Cloudflare NS values. Save.",
+        "Propagation takes up to 24 hours but is usually under an hour.",
+        "<strong>Verify existing records are intact:</strong> Once Cloudflare is active, confirm that any records for services you were already running (apex domain, <code>www</code>, email MX records, etc.) are present and correctly configured. If an existing service breaks after switching, check whether its DNS records need to be set to <strong>DNS-only (gray cloud)</strong> rather than proxied — some hosting providers require direct DNS resolution and do not work behind the Cloudflare proxy."
+      ]
+    },
+    {
+      "heading": "Phase 2: Set Up Wildcard DNS for Your Homelab",
+      "subtitle": "Rather than creating individual A records for each app subdomain, use a single wildcard A record pointing to your home IP. This means you only ever manage routing in NPM — Cloudflare DNS becomes set-and-forget.",
+      "steps": [
+        "<strong>Check for an existing wildcard record:</strong> Cloudflare may have imported a <code>*</code> A record pointing to a third-party hosting provider's IPs. Before deleting it, confirm that your apex domain and any important subdomains have their own explicit records in Cloudflare. Once a wildcard is deleted, only subdomains with explicit records will continue to resolve.",
+        "<strong>Delete any existing wildcard A record:</strong> In Cloudflare → DNS → Records, delete any existing <code>*</code> A records you no longer need.",
+        "<strong>Add a homelab wildcard A record:</strong> In Cloudflare → DNS → Records → Add record: Type <code>A</code>, Name <code>*</code>, IPv4 address set to your current public IP (find it at whatismyip.com), Proxy status <strong>Proxied (orange cloud)</strong>, TTL Auto → Save.",
+        "<em>Note: Cloudflare always prefers the most specific match. Any explicit subdomain records will still win over this wildcard. The wildcard only catches subdomains with no explicit record of their own.</em>",
+        "<em>Why proxied? With the orange cloud on, external clients hit Cloudflare's edge rather than your home IP directly. This hides your home IP and provides DDoS protection. The trade-off is that only standard ports 80 and 443 can be proxied.</em>"
+      ]
+    },
+    {
+      "heading": "Phase 3: Create a Cloudflare API Token",
+      "subtitle": "This single token is used by both the DDNS container (to update the wildcard A record) and Nginx Proxy Manager (to issue SSL certificates via DNS challenge). One token covers both use cases.",
+      "steps": [
+        "In Cloudflare → top-right avatar → My Profile → API Tokens → Create Token.",
+        "Use the <strong>Edit zone DNS</strong> template.",
+        "Under Zone Resources, set it to <strong>Specific zone</strong> → select your domain.",
+        "Click Continue to summary → Create Token.",
+        "<strong>Copy and save this token immediately</strong> — it is only shown once. Store it in your password manager.",
+        "<em>Your Zone ID is on the right-hand sidebar of your domain's Overview page in Cloudflare. You will need this for the DDNS config.json in Phase 6.</em>"
+      ]
+    },
+    {
+      "heading": "Phase 4: Prepare the Server for NPM in Host Mode",
+      "subtitle": "NPM must run in Host network mode so it can bind directly to ports 80 and 443. server's own web UI sits on those ports by default, so you must move it first.",
+      "steps": [
+        "In Server dashboard → <strong>Settings → Management Access</strong>.",
+        "Change the <strong>HTTP port</strong> from <code>80</code> to <code>8080</code>.",
+        "Change the <strong>HTTPS port</strong> from <code>443</code> to <code>8443</code>.",
+        "Save. The server will restart its web UI. Going forward, access the server dashboard by appending <code>:8080</code> to your server's LAN IP (e.g. <code>http://YOUR_SERVER_IP:8080</code>).",
+        "<em>Why Host mode? In bridge mode, NPM binds only to its internal container network rather than the host's physical network interfaces, causing it to listen on localhost only and refuse all connections arriving from the router's port forward. Host mode makes NPM bind directly to all of the host's network interfaces.</em>"
+      ]
+    },
+    {
+      "heading": "Phase 5: Deploy Nginx Proxy Manager",
+      "subtitle": "Install NPM as a Docker container in Host network mode with persistent data volumes.",
+      "steps": [
+        "In Server dashboard → Docker tab → Add Container (or search Community Applications for 'Nginx Proxy Manager').",
+        "Set <strong>Network Type</strong> to <code>Host</code>.",
+        "Add the following volume mappings to preserve your configuration across container rebuilds:",
+        "&nbsp;&nbsp;• Host path <code>/mnt/user/appdata/nginx-proxy-manager/data</code> → Container path <code>/data</code>",
+        "&nbsp;&nbsp;• Host path <code>/mnt/user/appdata/nginx-proxy-manager/letsencrypt</code> → Container path <code>/etc/letsencrypt</code>",
+        "Do <strong>not</strong> add any port mappings — in Host mode the container shares the host's network stack directly and port mappings are not used.",
+        "Click Apply and start the container.",
+        "<strong>Access the NPM web UI</strong> at <code>http://YOUR_SERVER_IP:81</code>. Port 81 is NPM's admin interface.",
+        "Default login credentials: Email <code>admin@example.com</code>, Password <code>changeme</code>. NPM will force you to change both on first login.",
+        "<strong>Verify NPM is binding correctly</strong> by running the following in the server terminal. You should see <code>0.0.0.0:80</code>, <code>0.0.0.0:443</code>, and <code>0.0.0.0:81</code> in the output:",
+        "&nbsp;&nbsp;<code>netstat -tlnp | grep -E ':80|:81|:443'</code>",
+        "<em>If port 443 shows as bound to 127.0.0.1 rather than 0.0.0.0, NPM is not correctly in Host mode or a port conflict exists. See the Troubleshooting Reference section.</em>",
+        "<em>Tip: Once NPM is working, create a proxy host for NPM itself pointing to localhost:81 under a subdomain (e.g. npm.yourdomain.com). This lets you access the admin UI over HTTPS and allows you to block external access to raw port 81.</em>"
+      ]
+    },
+    {
+      "heading": "Phase 6: Deploy the Cloudflare DDNS Container",
+      "subtitle": "This container polls your public IP and updates the wildcard A record in Cloudflare whenever it changes. It makes outbound API calls only and uses no ports.",
+      "steps": [
+        "<strong>Create the config file.</strong> SSH into your server (or use the server terminal) and run:",
+        "&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/cloudflare-ddns</code>",
+        "&nbsp;&nbsp;<code>nano /mnt/user/appdata/cloudflare-ddns/config.json</code>",
+        "Paste the following, replacing the placeholder values with your API token (from Phase 3) and Zone ID (from your domain's Cloudflare Overview page):",
+        "&nbsp;&nbsp;<code>{</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;\"cloudflare\": [</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;{</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"authentication\": { \"api_token\": \"YOUR_API_TOKEN_HERE\" },</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"zone_id\": \"YOUR_ZONE_ID_HERE\",</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"subdomains\": [ { \"name\": \"*\", \"proxied\": true } ]</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;}</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;],</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;\"a\": true,</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;\"aaaa\": false,</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;\"purgeUnknownRecords\": false,</code>",
+        "&nbsp;&nbsp;<code>&nbsp;&nbsp;\"ttl\": 300</code>",
+        "&nbsp;&nbsp;<code>}</code>",
+        "<strong>Add the container</strong> → Docker → Add Container (or search Community Applications for 'cloudflare-ddns' by timothymiller):",
+        "&nbsp;&nbsp;• Repository: <code>timothyjmiller/cloudflare-ddns:latest</code>",
+        "&nbsp;&nbsp;• Network Type: <code>Host</code>",
+        "&nbsp;&nbsp;• Path mapping: Host <code>/mnt/user/appdata/cloudflare-ddns/config.json</code> → Container <code>/config.json</code>",
+        "Click Apply. Open the container log — a successful first run shows: <code>Updating A record for *.yourdomain.com → [your public IP]</code>.",
+        "The container re-checks every 300 seconds and updates Cloudflare only when your IP has changed."
+      ]
+    },
+    {
+      "heading": "Phase 7: Router Port Forwarding",
+      "subtitle": "Cloudflare's proxy forwards traffic to your public IP on ports 80 and 443. Your router needs to send that traffic to the server running NPM.",
+      "steps": [
+        "Log into your router admin panel.",
+        "Create two port forward rules:",
+        "&nbsp;&nbsp;• External port <code>80</code> → your server's LAN IP, internal port <code>80</code>",
+        "&nbsp;&nbsp;• External port <code>443</code> → your server's LAN IP, internal port <code>443</code>",
+        "Ensure your server has a <strong>static LAN IP</strong> so these rules don't break if the server reboots. Set a DHCP reservation by MAC address in your router, or configure a static IP under Settings → Network Settings."
+      ]
+    },
+    {
+      "heading": "Phase 8: Configure Nginx Proxy Manager",
+      "subtitle": "Issue a wildcard SSL certificate and create proxy host entries for each app. Adding a new app in the future only requires adding a proxy host in NPM — no Cloudflare or DDNS changes needed.",
+      "steps": [
+        "<strong>Issue a wildcard SSL certificate via DNS challenge</strong> (not HTTP challenge — DNS challenge is required for wildcard certs and does not require port 80 to be reachable for cert issuance):",
+        "&nbsp;&nbsp;• In NPM → SSL Certificates → Add SSL Certificate → Let's Encrypt.",
+        "&nbsp;&nbsp;• Domain Names: <code>*.yourdomain.com</code>",
+        "&nbsp;&nbsp;• Toggle <strong>Use a DNS Challenge</strong> → on.",
+        "&nbsp;&nbsp;• DNS Provider: <strong>Cloudflare</strong>.",
+        "&nbsp;&nbsp;• Credentials File Content: <code>dns_cloudflare_api_token=YOUR_API_TOKEN_HERE</code> (same token from Phase 3).",
+        "&nbsp;&nbsp;• Enter your email, agree to the Let's Encrypt TOS → Save.",
+        "NPM will place a temporary TXT record in Cloudflare to prove domain ownership, then issue the cert. This takes 60–90 seconds and happens synchronously — if it fails you will see an error on screen. Successfully landing on the certs list means it worked.",
+        "<em>The cert will show as 'Not Used' until you attach it to a proxy host. This is normal and just means no proxy host has been assigned the cert yet. Confirm the cert issued correctly by checking that an expiry date approximately 90 days out is shown next to it.</em>",
+        "<strong>Add a proxy host for each app:</strong>",
+        "&nbsp;&nbsp;• Hosts → Proxy Hosts → Add Proxy Host.",
+        "&nbsp;&nbsp;• Domain Names: the full subdomain for this app (e.g. <code>appname.yourdomain.com</code>).",
+        "&nbsp;&nbsp;• Scheme: <strong>http</strong> — NPM talks to the backend container over HTTP internally and handles HTTPS termination itself. Do not set this to https unless your backend container is itself serving HTTPS.",
+        "&nbsp;&nbsp;• Forward Hostname / IP: the app container's LAN IP or Docker container name if on the same bridge network.",
+        "&nbsp;&nbsp;• Forward Port: the app's internal port.",
+        "&nbsp;&nbsp;• Toggle Block Common Exploits → on.",
+        "&nbsp;&nbsp;• Toggle Websockets Support → on if the app requires it.",
+        "&nbsp;&nbsp;• SSL tab → select the <code>*.yourdomain.com</code> cert → toggle Force SSL and HTTP/2 Support on → Save.",
+        "<strong>Set Cloudflare SSL mode to Full:</strong> In Cloudflare → SSL/TLS → Overview, set the mode to <strong>Full</strong> (not Flexible, not Full Strict). Flexible causes redirect loops because NPM redirects HTTP to HTTPS while Cloudflare is still sending HTTP to the origin. Full requires encryption to the origin but accepts NPM's Let's Encrypt cert without issue.",
+        "<em>If you see ERR_TOO_MANY_REDIRECTS after setup, this is almost always the cause — switch Cloudflare from Flexible to Full.</em>",
+        "<strong>Access Control Lists (optional):</strong> For apps you want to restrict to known IPs without full Clerk auth: NPM → Access Lists → Add Access List → add your trusted IP ranges as allow, set default action to deny → attach to the relevant proxy host under its Details tab."
+      ]
+    },
+    {
+      "heading": "Phase 9: Clerk Auth for Demo Apps (Optional)",
+      "subtitle": "For hosted demo applications where you want to force user registration with an allowlist, Clerk sits in front of the app as an authentication layer. NPM still terminates TLS and routes traffic — Clerk enforces session validation before content is served.",
+      "steps": [
+        "<strong>Pattern A — Clerk in the app (preferred for apps you control):</strong>",
+        "&nbsp;&nbsp;• Sign up at clerk.com → create an application.",
+        "&nbsp;&nbsp;• Install the Clerk SDK: <code>npm install @clerk/nextjs</code> (Next.js) or <code>npm install @clerk/clerk-react @clerk/clerk-sdk-node</code> (React + Express).",
+        "&nbsp;&nbsp;• Wrap your app with <code>&lt;ClerkProvider&gt;</code> and protect routes with <code>auth()</code> middleware.",
+        "&nbsp;&nbsp;• In Clerk Dashboard → Users → manually invite or allowlist specific email addresses or domains.",
+        "&nbsp;&nbsp;• Your NPM proxy host for this app remains unchanged — Clerk auth happens at the application layer.",
+        "<strong>Pattern B — Auth middleware proxy (for third-party containers you don't control):</strong>",
+        "&nbsp;&nbsp;• Add <code>oauth2-proxy</code> as a container on your server.",
+        "&nbsp;&nbsp;• Configure it with Clerk's OIDC endpoints (available at <code>https://YOUR_CLERK_DOMAIN/.well-known/openid-configuration</code>).",
+        "&nbsp;&nbsp;• In NPM, point the proxy host for that app at oauth2-proxy's port rather than the app directly.",
+        "&nbsp;&nbsp;• oauth2-proxy handles the login redirect → Clerk handles auth → oauth2-proxy forwards the validated session to the upstream app.",
+        "<strong>Clerk allowlisting (applies to both patterns):</strong>",
+        "&nbsp;&nbsp;• In Clerk Dashboard → User & Authentication → Restrictions → enable Allowlist mode.",
+        "&nbsp;&nbsp;• Add specific email addresses or whole domains you want to permit.",
+        "&nbsp;&nbsp;• Disable public sign-up so only allowlisted users can register."
+      ]
+    },
+    {
+      "heading": "Phase 10: Verification Checklist",
+      "content": [
+        "Run through these after initial setup:",
+        "&nbsp;&nbsp;☐ <code>dig appname.yourdomain.com</code> returns a Cloudflare IP (not your home IP) — confirms the proxy is active",
+        "&nbsp;&nbsp;☐ <code>https://appname.yourdomain.com</code> loads from an external network with a valid <code>*.yourdomain.com</code> cert",
+        "&nbsp;&nbsp;☐ DDNS container log shows a successful A record update on first run",
+        "&nbsp;&nbsp;☐ After manually changing the Cloudflare wildcard A record IP, the DDNS container corrects it within 5 minutes",
+        "&nbsp;&nbsp;☐ NPM access list blocks an IP not on your allowlist with a 403",
+        "&nbsp;&nbsp;☐ Clerk-gated app redirects unauthenticated users to the Clerk sign-in page",
+        "&nbsp;&nbsp;☐ Your existing domain (apex and www) still resolves correctly — Cloudflare did not break those records",
+        "&nbsp;&nbsp;☐ No ERR_TOO_MANY_REDIRECTS — Cloudflare SSL mode is set to Full"
+      ]
+    },
+    {
+      "heading": "Operational Notes",
+      "content": [
+        "<strong>Adding a new app:</strong> Add one proxy host in NPM (subdomain + forward IP/port + attach the existing <code>*.yourdomain.com</code> cert). That's it. No Cloudflare changes, no DDNS config changes.",
+        "<strong>Local access:</strong> Accessing your public subdomains from inside your own network may fail depending on your router and ISP gateway. The most common causes are ISP-level port blocking (see Troubleshooting) and hairpin NAT — where the router drops connections destined for its own external IP originating from inside the network. Options for local access include:",
+        "&nbsp;&nbsp;• Access apps directly via their LAN IP and port (e.g. <code>http://YOUR_SERVER_IP:APP_PORT</code>)",
+        "&nbsp;&nbsp;• Add a DNS rewrite in a local DNS resolver (AdGuard Home, Pi-hole) mapping <code>*.yourdomain.com</code> → your server's LAN IP",
+        "&nbsp;&nbsp;• Add a hosts file entry on each device: <code>YOUR_SERVER_IP  appname.yourdomain.com</code>",
+        "<strong>Cloudflare caching:</strong> For APIs or apps returning dynamic data, add a Cloudflare Page Rule or Transform Rule to bypass caching for those paths, or set Cache Level: Bypass on the relevant domain.",
+        "<strong>NPM admin UI:</strong> Access at <code>http://YOUR_SERVER_IP:81</code>. In Host mode there is no separate container IP — the container shares the host's network stack directly.",
+        "<strong>Server dashboard:</strong> After moving management ports in Phase 4, access the server dashboard at <code>http://YOUR_SERVER_IP:8080</code>."
+      ]
+    },
+    {
+      "heading": "Troubleshooting Reference",
+      "content": [
+        "<strong>Cloudflare 521 (Connection refused):</strong> NPM is not listening on port 443. Verify NPM is running (<code>docker ps | grep proxy</code>) and that <code>netstat -tlnp | grep 443</code> shows <code>0.0.0.0:443</code> bound to nginx, not just <code>127.0.0.1:443</code>. If bound to localhost only, NPM is not correctly in Host mode or a port conflict exists — confirm server's management ports were moved off 80/443 in Phase 4.",
+        "<strong>Cloudflare 522 (Connection timed out):</strong> Cloudflare reached your public IP but the connection timed out. Work through these in order: (1) Check your ISP modem or gateway config page for port blocking — many ISPs block inbound ports 80 and/or 443 by default at the gateway level, upstream of your router entirely. This must be disabled in the ISP equipment's admin interface, not your router. (2) Check port forwarding rules on your router. (3) Confirm NPM is bound to <code>0.0.0.0:443</code> not localhost. (4) Check that no firewall on the server is blocking inbound 443.",
+        "<strong>ERR_TOO_MANY_REDIRECTS:</strong> Cloudflare SSL mode is set to Flexible. Change it to Full in Cloudflare → SSL/TLS → Overview.",
+        "<strong>NPM bound to 127.0.0.1 only:</strong> server's own nginx is likely still holding ports 80 and 443. Confirm server management ports are set to 8080/8443 (Phase 4), then restart the NPM container.",
+        "<strong>Cert shows 'Not Used' in NPM:</strong> Normal — this just means no proxy host has been assigned the cert yet. Confirm the cert issued correctly by checking that an expiry date approximately 90 days out is shown.",
+        "<strong>522 on all connections including local:</strong> Check your ISP gateway for port blocking first — ISP-level port blocks affect all connections. If external users are also getting 522, the ISP gateway is the most likely cause. If external users are unaffected but local access fails, this is likely hairpin NAT — see Local Access in Operational Notes above."
+      ]
+    }
+  ]
+}
