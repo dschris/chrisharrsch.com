@@ -84,6 +84,23 @@
             <div class="social-links">
                 {{CONTACT_LINKS}}
             </div>
+
+            <div class="pgp-section">
+                <h3>PGP Public Key</h3>
+                <div class="pgp-key-block">
+                    <div class="pgp-key-header">
+                        <span class="pgp-key-filename"><i class="fas fa-key"></i> pubkey.asc</span>
+                        <button id="copy-pgp-key" class="pgp-copy-btn" onclick="copyPGPKey()" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="pgp-key-content"><code id="pgp-key-text">{{PGP_PUBLIC_KEY}}</code></pre>
+                </div>
+                <div class="pgp-footer">
+                    <a href="src/pubkey.asc" class="pgp-download-link" download><i class="fas fa-download"></i> download pubkey.asc</a>
+                    <span class="pgp-fingerprint">420A BACA 9A41 3FC3 A6C4  1F0E DD24 1BA1 2A14 21AD</span>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -221,6 +238,20 @@
                 showEquipmentDetail(el);
             });
         });
+
+        // ── PGP Key Copy ──
+        function copyPGPKey() {
+            const keyText = document.getElementById('pgp-key-text').textContent;
+            const btn = document.getElementById('copy-pgp-key');
+            navigator.clipboard.writeText(keyText).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
     </script>
 </body>
 

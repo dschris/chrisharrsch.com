@@ -239,6 +239,7 @@ const generateHomelabHTML = (homelab, guides) => {
                      data-icon="${tower.icon}"
                      data-specs='${JSON.stringify(tower.specs)}'
                      data-services='${JSON.stringify(tower.services)}'>
+                    <span class="unit-indicator">&gt;</span>
                     <span class="tower-name">${tower.name}</span>
                     <span class="tower-role">${tower.role.split(' — ')[0]}</span>
                     <div class="tower-gpu-glow"></div>
@@ -385,6 +386,10 @@ const build = async () => {
     const { experienceHTML, educationHTML, skillsHTML } = generateResumeHTML(resume);
     const { intro: contactIntro, linksHTML: contactLinksHTML } = generateContactHTML(contact);
 
+    // Read PGP public key
+    const pgpKeyPath = path.join(__dirname, 'src', 'pubkey.asc');
+    const pgpPublicKey = fs.existsSync(pgpKeyPath) ? fs.readFileSync(pgpKeyPath, 'utf8').trim() : '';
+
     // Replace Placeholders
     let output = template
         .replace('{{HOME_TITLE}}', home.title)
@@ -402,7 +407,8 @@ const build = async () => {
         .replace('{{RESUME_EDUCATION}}', educationHTML)
         .replace('{{RESUME_SKILLS}}', skillsHTML)
         .replace('{{CONTACT_INTRO}}', contactIntro)
-        .replace('{{CONTACT_LINKS}}', contactLinksHTML);
+        .replace('{{CONTACT_LINKS}}', contactLinksHTML)
+        .replace('{{PGP_PUBLIC_KEY}}', pgpPublicKey);
 
     // Write Output
     fs.writeFileSync(OUTPUT_PATH, output);
