@@ -19,5 +19,12 @@
         "github": "https://github.com/dschris/tokenized-equities-full-demo-env",
         "visibility": "private",
         "description": "The Digital Transfer Agent is a tokenized equities issuance and management platform that demonstrates how traditional securities operations (listing, transfer agency, corporate actions, and shareholder services) can be represented on-chain using ERC-20-compatible token contracts."
+    },
+    {
+        "title": "Transfer Agent Platform",
+        "link": "http://transferagent.chrisharrsch.com/",
+        "github": "https://github.com/dschris/v0-tokenized-equities-platform",
+        "visibility": "private",
+        "description": "A frontend application demonstrating the features of a transfer agent for tokenized equities, with handling for share capital, corporate actions, and proxy voting alongside an intelligence dashboard."
     }
 ]
