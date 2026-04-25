@@ -251,15 +251,49 @@ const generateHomelabHTML = (homelab, guides) => {
     const guidesHTML = guides.map(guide => {
         const tagsHTML = guide.tags.map(tag => `<span class="guide-tag">${tag}</span>`).join('');
 
-        const sectionsHTML = guide.sections.map(section => {
+    // Codeblock ID counter for unique copy-button targeting
+    let codeblockCounter = 0;
+
+    // Render a codeblock object as a unified code block with copy button
+    const renderCodeblock = (block) => {
+        const id = `codeblock-${codeblockCounter++}`;
+        const escaped = block.code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        const filenameLabel = block.filename || block.language || 'code';
+        return `<div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> ${filenameLabel}</span>
+                        <button class="guide-codeblock-copy" data-target="${id}" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="${id}" class="language-${block.language || 'text'}">${escaped}</code></pre>
+                </div>`;
+    };
+
+    // Process a mixed content array (strings and codeblock objects)
+    // When isSteps is true, codeblocks are wrapped in <li> to stay inside the step flow
+    const renderContentItems = (items, wrapper, isSteps = false) => {
+        return items.map(item => {
+            if (typeof item === 'object' && item.type === 'codeblock') {
+                const html = renderCodeblock(item);
+                return isSteps ? `<li class="guide-step-codeblock">${html}</li>` : html;
+            }
+            return wrapper(item);
+        }).join('');
+    };
+
+    const sectionsHTML = guide.sections.map(section => {
             let bodyHTML = '';
 
             if (section.content) {
-                bodyHTML += `<div class="guide-phase-content">${section.content.map(p => `<p>${p}</p>`).join('')}</div>`;
+                bodyHTML += `<div class="guide-phase-content">${renderContentItems(section.content, p => `<p>${p}</p>`)}</div>`;
             }
 
             if (section.steps) {
-                bodyHTML += `<ol class="guide-steps">${section.steps.map(step => `<li>${step}</li>`).join('')}</ol>`;
+                bodyHTML += `<ol class="guide-steps">${renderContentItems(section.steps, step => `<li>${step}</li>`, true)}</ol>`;
             }
 
             return `

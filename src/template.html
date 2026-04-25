@@ -257,6 +257,21 @@
                 }, 2000);
             });
         }
+
+        // ── Guide Codeblock Copy ──
+        function copyCodeblock(btn) {
+            const targetId = btn.getAttribute('data-target');
+            const codeEl = document.getElementById(targetId);
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.textContent).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
     </script>
 </body>
 

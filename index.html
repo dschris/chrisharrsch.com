@@ -961,7 +961,7 @@
                     <div class="unit-content">
                         <span class="unit-name">Ubiquiti 48-Port Switch</span>
                         <span class="unit-role">Managed Switch</span>
-                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span></div>
+                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span></div>
                     </div>
                 </div>
                 <div class="rack-unit size-4u" data-equipment-id="canterbury"
@@ -1054,7 +1054,27 @@
                     <div class="guide-phase">
                         <h3 class="guide-phase-heading">Phase 6: Deploy the Cloudflare DDNS Container</h3>
                         <div class="guide-phase-subtitle">This container polls your public IP and updates the wildcard A record in Cloudflare whenever it changes. It makes outbound API calls only and uses no ports.</div>
-                        <ol class="guide-steps"><li><strong>Create the config file.</strong> SSH into your server (or use the server terminal) and run:</li><li>&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/cloudflare-ddns</code></li><li>&nbsp;&nbsp;<code>nano /mnt/user/appdata/cloudflare-ddns/config.json</code></li><li>Paste the following, replacing the placeholder values with your API token (from Phase 3) and Zone ID (from your domain's Cloudflare Overview page):</li><li>&nbsp;&nbsp;<code>{</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;"cloudflare": [</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;{</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"authentication": { "api_token": "YOUR_API_TOKEN_HERE" },</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"zone_id": "YOUR_ZONE_ID_HERE",</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"subdomains": [ { "name": "*", "proxied": true } ]</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;],</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;"a": true,</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;"aaaa": false,</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;"purgeUnknownRecords": false,</code></li><li>&nbsp;&nbsp;<code>&nbsp;&nbsp;"ttl": 300</code></li><li>&nbsp;&nbsp;<code>}</code></li><li><strong>Add the container</strong> → Docker → Add Container (or search Community Applications for 'cloudflare-ddns' by timothymiller):</li><li>&nbsp;&nbsp;• Repository: <code>timothyjmiller/cloudflare-ddns:latest</code></li><li>&nbsp;&nbsp;• Network Type: <code>Host</code></li><li>&nbsp;&nbsp;• Path mapping: Host <code>/mnt/user/appdata/cloudflare-ddns/config.json</code> → Container <code>/config.json</code></li><li>Click Apply. Open the container log — a successful first run shows: <code>Updating A record for *.yourdomain.com → [your public IP]</code>.</li><li>The container re-checks every 300 seconds and updates Cloudflare only when your IP has changed.</li></ol>
+                        <ol class="guide-steps"><li><strong>Create the config file.</strong> SSH into your server (or use the server terminal) and run:</li><li>&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/cloudflare-ddns</code></li><li>&nbsp;&nbsp;<code>nano /mnt/user/appdata/cloudflare-ddns/config.json</code></li><li>Paste the following, replacing the placeholder values with your API token (from Phase 3) and Zone ID (from your domain's Cloudflare Overview page):</li><li class="guide-step-codeblock"><div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> config.json</span>
+                        <button class="guide-codeblock-copy" data-target="codeblock-0" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="codeblock-0" class="language-json">{
+  "cloudflare": [
+    {
+      "authentication": { "api_token": "YOUR_API_TOKEN_HERE" },
+      "zone_id": "YOUR_ZONE_ID_HERE",
+      "subdomains": [ { "name": "*", "proxied": true } ]
+    }
+  ],
+  "a": true,
+  "aaaa": false,
+  "purgeUnknownRecords": false,
+  "ttl": 300
+}</code></pre>
+                </div></li><li><strong>Add the container</strong> → Docker → Add Container (or search Community Applications for 'cloudflare-ddns' by timothymiller):</li><li>&nbsp;&nbsp;• Repository: <code>timothyjmiller/cloudflare-ddns:latest</code></li><li>&nbsp;&nbsp;• Network Type: <code>Host</code></li><li>&nbsp;&nbsp;• Path mapping: Host <code>/mnt/user/appdata/cloudflare-ddns/config.json</code> → Container <code>/config.json</code></li><li>Click Apply. Open the container log — a successful first run shows: <code>Updating A record for *.yourdomain.com → [your public IP]</code>.</li><li>The container re-checks every 300 seconds and updates Cloudflare only when your IP has changed.</li></ol>
                     </div>
                     <div class="guide-phase">
                         <h3 class="guide-phase-heading">Phase 7: Router Port Forwarding</h3>
@@ -1354,6 +1374,21 @@ SqHVfKT851jLw70Qopk=
             const keyText = document.getElementById('pgp-key-text').textContent;
             const btn = document.getElementById('copy-pgp-key');
             navigator.clipboard.writeText(keyText).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // ── Guide Codeblock Copy ──
+        function copyCodeblock(btn) {
+            const targetId = btn.getAttribute('data-target');
+            const codeEl = document.getElementById(targetId);
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.textContent).then(() => {
                 btn.innerHTML = '<i class="fas fa-check"></i> copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
