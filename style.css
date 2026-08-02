@@ -722,7 +722,8 @@ p {
 /* Detail Panel */
 .equipment-detail-panel {
     position: relative;
-    min-height: 0;
+    min-height: 420px;
+    height: 420px;
     min-width: 0;
 }
 
@@ -829,6 +830,41 @@ p {
 .service-tag i {
     font-size: 0.7rem;
     color: var(--dim-color);
+}
+
+.agent-tag {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.3);
+}
+
+.agent-tag i {
+    color: #64c8ff;
+}
+
+/* Guide tables */
+.guide-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+}
+
+.guide-body th,
+.guide-body td {
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.guide-body th {
+    background: rgba(128, 128, 128, 0.1);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.guide-body td {
+    background: transparent;
 }
 
 /* ─── Guides Section ─── */

@@ -220,6 +220,7 @@
             const icon = el.dataset.icon;
             const specs = JSON.parse(el.dataset.specs || '[]');
             const services = JSON.parse(el.dataset.services || '[]');
+            const agents = JSON.parse(el.dataset.agents || '[]');
 
             // Update active state
             document.querySelectorAll('.rack-unit.active, .tower-unit.active').forEach(u => u.classList.remove('active'));
@@ -239,6 +240,15 @@
                     </div>`;
             }
 
+            let agentsHTML = '';
+            if (agents.length > 0) {
+                agentsHTML = `
+                    <div class="detail-services" style="margin-top:3px">
+                        <span class="detail-services-label">active agents:</span>
+                        ${agents.map(a => `<span class="service-tag agent-tag"><i class="${a.icon}"></i> ${a.name}</span>`).join('')}
+                    </div>`;
+            }
+
             panel.innerHTML = `
                 <div class="detail-header">
                     ${icon ? `<span class="detail-icon"><i class="${icon}"></i></span>` : ''}
@@ -248,7 +258,8 @@
                     </div>
                 </div>
                 <div class="detail-specs">${specsHTML}</div>
-                ${servicesHTML}`;
+                ${servicesHTML}
+                ${agentsHTML}`;
         }
 
         // Attach event listeners to equipment units

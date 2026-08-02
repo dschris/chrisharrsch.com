@@ -90,6 +90,20 @@
           "name": "Transfer Agent Platform",
           "icon": "fas fa-building-columns"
         }
+      ],
+      "agents": [
+        {
+          "name": "PM Agent",
+          "icon": "fas fa-robot"
+        },
+        {
+          "name": "Eng Agent",
+          "icon": "fas fa-code"
+        },
+        {
+          "name": "DevOps Agent",
+          "icon": "fas fa-gears"
+        }
       ]
     },
     {
@@ -143,18 +157,20 @@
       }
     ],
     "services": [
-      {
-        "name": "Ollama",
-        "icon": "fas fa-brain"
-      },
-      {
-        "name": "ComfyUI",
-        "icon": "fas fa-palette"
-      },
-      {
-        "name": "Hermes",
-        "icon": "fas fa-comments"
-      }
-    ]
+            {
+              "name": "Ollama",
+              "icon": "fas fa-brain"
+            },
+            {
+              "name": "ComfyUI",
+              "icon": "fas fa-palette"
+            }
+          ],
+          "agents": [
+            {
+              "name": "Hermes",
+              "icon": "fas fa-comments"
+            }
+          ]
   }
 }
