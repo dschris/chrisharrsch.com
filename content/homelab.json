@@ -89,6 +89,10 @@
         {
           "name": "Transfer Agent Platform",
           "icon": "fas fa-building-columns"
+        },
+        {
+          "name": "Forgejo",
+          "icon": "fas fa-code-branch"
         }
       ],
       "agents": [
