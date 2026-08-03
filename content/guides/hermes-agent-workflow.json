@@ -1,11 +1,11 @@
 {
   "id": "hermes-agent-workflow",
   "title": "Multi-Agent Workflow with Hermes Agents",
-  "date": "2026-08-02",
+  "date": "2026-08-03",
   "tags": [
     "hermes",
     "agents",
-    "github",
+    "forgejo",
     "automation",
     "homelab",
     "devops",
@@ -16,9 +16,10 @@
     {
       "heading": "Architecture Overview",
       "content": [
-        "This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via GitHub to triage issues, write code, review pull requests, run quality checks, and deploy to staging.",
-        "The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own GitHub machine user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through GitHub issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.",
-        "<strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → GitHub issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.",
+        "This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, and deploy to staging.",
+        "The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own Forgejo user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through Forgejo issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.",
+        "<strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.",
+        "The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely.",
         "<strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments. All LLM calls go through OpenRouter."
       ]
     },
@@ -28,12 +29,12 @@
       "steps": [
         "Create Linux user on Lion's Rest Inn with Docker group access",
         "Generate SSH key and GPG signing key (ed25519)",
-        "Create GitHub machine user account with plus-addressed email (harrsch.agents+<agent>@gmail.com)",
-        "Upload SSH public key + GPG public key, invite to GitHub org as Member",
-        "Create fine-grained PAT with Issues, Pull Requests, Contents (R&W) plus Actions and Commit Statuses for pipeline agents",
+        "Create Forgejo user account with plus-addressed email (harrsch.agents+<agent>@gmail.com)",
+        "Upload SSH public key + GPG public key, add to Harrsch-Industries org under the agents team",
+        "Generate a Forgejo PAT (scopes: write:repository, write:issue, read:user, read:admin)",
         "Install Hermes via <code>uv tool install hermes-agent --python python3</code> (never a local venv)",
         "Write config.yaml with model, provider, and persona system prompt",
-        "Wire PAT via <code>gh auth login --with-token</code>, accept GitHub SSH host key",
+        "Wire PAT via <code>tea login add</code> and register the git credential helper (<code>tea login helper setup</code>), deploy the <code>forgejo-api</code> wrapper script",
         "Create cron jobs with <code>--workdir /home/&lt;agent&gt;</code> to avoid .git permission errors"
       ]
     },
@@ -43,8 +44,8 @@
         "<table><thead><tr><th>Agent</th><th>Role</th><th>Model Tier</th><th>Budget</th><th>Cron</th></tr></thead><tbody>",
         "<tr><td><strong>PM Agent</strong></td><td>Stakeholder interface. Creates issues, reviews PRs, sends Telegram notifications.</td><td>Cost-effective reasoning (e.g. DeepSeek)</td><td>Moderate daily cap</td><td>PR review poller every 10m — delivers to Telegram</td></tr>",
         "<tr><td><strong>Engineering Agent</strong></td><td>Picks up issues, writes code, opens PRs. Fixes PRs when PM requests changes and re-requests review.</td><td>Stronger coding model</td><td>Largest daily cap</td><td>Issue/PR poller every 10m</td></tr>",
-        "<tr><td><strong>DevOps Agent</strong></td><td>Full pipeline owner. Runs lint, tests, security scan, deploys to staging, reports results. Can create GitHub Actions workflows.</td><td>Cost-effective reasoning</td><td>Smallest daily cap</td><td>Pipeline poller every 10m</td></tr>",
-        "<tr><td><strong>Security Bot</strong></td><td>Automated security auditor. Static analysis (bandit, semgrep, OWASP Top 10), dependency vulnerability scan, dynamic analysis against staging deployments. Blocks merges on critical findings.</td><td>Frontier reasoning (e.g. Claude Opus)</td><td>Moderate daily cap</td><td>Security scan poller every 10m</td></tr>",
+        "<tr><td><strong>DevOps Agent</strong></td><td>Full pipeline owner. Runs lint, tests, security scan, deploys to staging, reports results.</td><td>Cost-effective reasoning</td><td>Smallest daily cap</td><td>Pipeline poller every 10m</td></tr>",
+        "<tr><td><strong>Security Bot</strong></td><td>Automated security auditor. Static analysis (bandit, semgrep, OWASP Top 10), dependency vulnerability scan, dynamic analysis against staging deployments. Blocks merges on critical findings.</td><td>Frontier reasoning (e.g. Claude Opus)</td><td>Moderate daily cap</td><td>Security scan poller (planned)</td></tr>",
         "</tbody></table>"
       ]
     },
@@ -56,7 +57,7 @@
         "<strong>Tier 1 — Auto-Approve</strong> (<code>auto-approve</code> label): For dependency bumps, CI config changes, minor docs, pure refactors. PM sanity-checks then squash-merges automatically. No human involvement.",
         "<strong>Tier 2 — PM Review + Ping</strong> (<code>pm-review</code> label, default): PM reviews the diff for hardcoded secrets, injection vectors, missing auth, debug code, missing tests, logic errors, and breaking API changes. If clean: approves (does not merge) and sends a Telegram notification to the stakeholder with a summary.",
         "<strong>Tier 3 — Escalate</strong> (<code>human-review</code> label or critical findings): PM flags the stakeholder immediately on Telegram.",
-        "If PM finds issues in Tier 2, they submit a formal GitHub review requesting changes. The Engineering Agent detects this on its next poll cycle, reads the review comments, fixes the code, pushes, and re-requests review from the PM.",
+        "If PM finds issues in Tier 2, they submit a formal Forgejo review requesting changes. The Engineering Agent detects this on its next poll cycle, reads the review comments, fixes the code, pushes, and re-requests review from the PM.",
         "After the PM approves, the DevOps Agent runs a 4-stage pipeline. If all stages pass, it also approves. The PR then sits with two approvals waiting for the stakeholder's final review and merge."
       ]
     },
@@ -69,15 +70,15 @@
         "&nbsp;&nbsp;3. <strong>Staging Deploy</strong> — Docker Compose build and deploy to <code>/home/staging/</code>, verify healthcheck endpoint, run integration tests. Stacks are isolated by project and PR number.",
         "&nbsp;&nbsp;4. <strong>Cleanup &amp; Report</strong> — Tear down the staging stack, post a PR comment with per-stage pass/fail results. If all pass: approve the PR. If any fail: request changes with details.",
         "The Security Bot then performs a separate deep-dive audit on the final code and staging deployment — static analysis (OWASP Top 10, dependency CVEs, secret detection) plus dynamic checks on the running instance. Critical findings block the merge; lower-severity findings are filed as recommendations.",
-        "A Docker Compose staging template is at <code>/home/staging/templates/</code>. The DevOps Agent can also create GitHub Actions workflows (deploy-on-push, scheduled jobs, CI).",
+        "A Docker Compose staging template is at <code>/home/staging/templates/</code>. Forgejo Actions (a GitHub Actions-compatible CI system) is available on the instance for future pipeline automation.",
         "Future goal: deploy containers directly to the Canterbury bare-metal host, currently blocked by incomplete Docker TLS configuration on Unraid."
       ]
     },
     {
       "heading": "Agent Communication",
       "content": [
-        "All inter-agent communication happens through GitHub. No agent ever SSHes into another or reads another agent's files. This eliminates coupling between agent runtimes and keeps a full audit trail on GitHub.",
-        "<strong>PM → Eng:</strong> Creates issues with requirements, assigns to the engineering agent's GitHub user. Picked up on the next poll cycle.",
+        "All inter-agent communication happens through Forgejo. No agent ever SSHes into another or reads another agent's files. This eliminates coupling between agent runtimes and keeps a full audit trail on the Forgejo instance.",
+        "<strong>PM → Eng:</strong> Creates issues with requirements, assigns to the engineering agent's Forgejo user. Picked up on the next poll cycle.",
         "<strong>Eng → PM:</strong> Opens PRs with labels. Comments on issues with status updates. Re-requests review after addressing feedback.",
         "<strong>PM → Stakeholder:</strong> Telegram notifications for PRs ready for review, escalations, and status summaries.",
         "<strong>DevOps → PRs:</strong> Pipeline reports as PR comments. Approves or requests changes based on pipeline outcome.",
@@ -88,17 +89,17 @@
       "heading": "Skills &amp; Knowledge Base",
       "content": [
         "All reusable agent workflows are saved as Hermes skills (markdown files with YAML frontmatter that agents can load as procedural memory):",
-        "<strong>agent-onboarding</strong> — Full bootstrap procedure: Linux user, SSH/GPG keys, Hermes install, config, git setup, PAT wiring, cron creation. Includes email convention, PATH pitfalls, and gateway setup.",
-        "<strong>pr-review-workflow</strong> — Three-tier PR approval system. Covers the decision matrix, gh CLI commands for each tier, and the agent feedback loop.",
+        "<strong>agent-onboarding</strong> — Full bootstrap procedure: Linux user, SSH/GPG keys, Hermes install, config, git setup, Forgejo PAT wiring, cron creation. Includes email convention, PATH pitfalls, and gateway setup.",
+        "<strong>pr-review-workflow</strong> — Three-tier PR approval system. Covers the decision matrix, tea CLI commands for each tier, and the agent feedback loop.",
         "Both skills live at <code>Harrsch-Industries/skill-library</code> under <code>devops/&lt;skill&gt;/SKILL.md</code>.",
-        "A master configuration reference (<code>AGENTS.md</code>) tracks every agent's specific SSH key fingerprint, GPG key ID, model, budget, cron job ID, and PAT permissions for maintenance."
+        "A master configuration reference (<code>AGENTS.md</code>) tracks every agent's specific SSH key fingerprint, GPG key ID, model, budget, cron job ID, and Forgejo PAT for maintenance."
       ]
     },
     {
       "heading": "Cost Notes",
       "content": [
         "All agents use OpenRouter with independent daily budget caps. No keys are shared.",
-        "The PM and DevOps agents use a cost-effective model since most of their work is executing terminal commands (git, gh, docker) rather than heavy reasoning. The Engineering Agent gets a stronger, more expensive model and the largest budget since it does the actual coding.",
+        "The PM and DevOps agents use a cost-effective model since most of their work is executing terminal commands (git, tea, docker) rather than heavy reasoning. The Engineering Agent gets a stronger, more expensive model and the largest budget since it does the actual coding.",
         "Each cron runs every 10 minutes. When there's nothing new to process, the cron responds with '[SILENT]' and skips inference, keeping costs negligible during idle periods."
       ]
     }
