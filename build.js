@@ -307,11 +307,12 @@ const generateHomelabHTML = (homelab, guides) => {
         }).join('');
 
         return `
-                <details class="guide-item">
+                <details class="guide-item" id="guide-${guide.id}">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">${guide.title}</span>
                         <span class="guide-date">${guide.date}</span>
+                        <a href="#guide-${guide.id}" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
                         <div class="guide-tags">${tagsHTML}</div>
                     </summary>
                     <div class="guide-body">

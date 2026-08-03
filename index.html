@@ -994,7 +994,7 @@
                     <div class="unit-content">
                         <span class="unit-name">Ubiquiti 48-Port Switch</span>
                         <span class="unit-role">Managed Switch</span>
-                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span></div>
+                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span></div>
                     </div>
                 </div>
                 <div class="rack-unit size-4u" data-equipment-id="canterbury"
@@ -1042,11 +1042,12 @@
             <div class="guides-section">
                 <h2>Configuration Guides</h2>
                 
-                <details class="guide-item">
+                <details class="guide-item" id="guide-hermes-agent-workflow">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Multi-Agent Workflow with Hermes Agents</span>
                         <span class="guide-date">2026-08-03</span>
+                        <a href="#guide-hermes-agent-workflow" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
                         <div class="guide-tags"><span class="guide-tag">hermes</span><span class="guide-tag">agents</span><span class="guide-tag">forgejo</span><span class="guide-tag">automation</span><span class="guide-tag">homelab</span><span class="guide-tag">devops</span><span class="guide-tag">docker</span><span class="guide-tag">self-hosting</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1093,11 +1094,12 @@
                     </div>
                     </div>
                 </details>
-                <details class="guide-item">
+                <details class="guide-item" id="guide-homelab-reverse-proxy-ddns">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Self-Hosted Reverse Proxy with Cloudflare DDNS</span>
                         <span class="guide-date">2026-04-23</span>
+                        <a href="#guide-homelab-reverse-proxy-ddns" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
                         <div class="guide-tags"><span class="guide-tag">networking</span><span class="guide-tag">dns</span><span class="guide-tag">unraid</span><span class="guide-tag">cloudflare</span><span class="guide-tag">nginx</span><span class="guide-tag">self-hosting</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1194,11 +1196,12 @@
                     </div>
                     </div>
                 </details>
-                <details class="guide-item">
+                <details class="guide-item" id="guide-pihole-tailscale-adblocking">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Global Ad-Blocking via Unraid, Pi-hole, and Tailscale</span>
                         <span class="guide-date">2026-04-04</span>
+                        <a href="#guide-pihole-tailscale-adblocking" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
                         <div class="guide-tags"><span class="guide-tag">networking</span><span class="guide-tag">dns</span><span class="guide-tag">vpn</span><span class="guide-tag">unraid</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1494,6 +1497,48 @@ SqHVfKT851jLw70Qopk=
                 }, 2000);
             });
         }
+    // ── Guide Deep-Link: hash-based direct linking ──
+        function openGuideFromHash() {
+            const hash = location.hash;
+            if (!hash || !hash.startsWith('#guide-')) return;
+            const guideId = hash.substring(1);
+            const guide = document.getElementById(guideId);
+            if (!guide) return;
+
+            // Switch to homelab section (index 4)
+            const homelabNav = document.querySelector('[data-section="homelab"]');
+            if (homelabNav) homelabNav.click();
+
+            // Open the details element
+            guide.setAttribute('open', '');
+
+            // Scroll to it after a brief delay for section transition
+            setTimeout(() => {
+                guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', openGuideFromHash);
+
+        // Handle initial hash on page load
+        if (location.hash && location.hash.startsWith('#guide-')) {
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', openGuideFromHash);
+            } else {
+                openGuideFromHash();
+            }
+        }
+
+        // Also handle when clicking nav items — if the hash is set, clear it
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (location.hash) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            });
+        });
     </script>
 </body>
 

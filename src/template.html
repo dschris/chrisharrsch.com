@@ -299,6 +299,48 @@
                 }, 2000);
             });
         }
+    // ── Guide Deep-Link: hash-based direct linking ──
+        function openGuideFromHash() {
+            const hash = location.hash;
+            if (!hash || !hash.startsWith('#guide-')) return;
+            const guideId = hash.substring(1);
+            const guide = document.getElementById(guideId);
+            if (!guide) return;
+
+            // Switch to homelab section (index 4)
+            const homelabNav = document.querySelector('[data-section="homelab"]');
+            if (homelabNav) homelabNav.click();
+
+            // Open the details element
+            guide.setAttribute('open', '');
+
+            // Scroll to it after a brief delay for section transition
+            setTimeout(() => {
+                guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', openGuideFromHash);
+
+        // Handle initial hash on page load
+        if (location.hash && location.hash.startsWith('#guide-')) {
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', openGuideFromHash);
+            } else {
+                openGuideFromHash();
+            }
+        }
+
+        // Also handle when clicking nav items — if the hash is set, clear it
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (location.hash) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            });
+        });
     </script>
 </body>
 

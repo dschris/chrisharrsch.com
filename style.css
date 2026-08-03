@@ -953,6 +953,25 @@ p {
     border: 1px solid rgba(128, 128, 128, 0.15);
 }
 
+.guide-permalink {
+    color: var(--dim-color);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    margin-left: auto;
+}
+
+.guide-summary:hover .guide-permalink {
+    opacity: 0.6;
+}
+
+.guide-permalink:hover {
+    opacity: 1 !important;
+    color: var(--accent-color, #64c8ff);
+}
+
 .guide-body {
     padding: 0 1.5rem 1.5rem;
     font-size: 0.9rem;
