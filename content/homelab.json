@@ -103,6 +103,10 @@
         {
           "name": "DevOps Agent",
           "icon": "fas fa-gears"
+        },
+        {
+          "name": "Security Bot",
+          "icon": "fas fa-shield"
         }
       ]
     },
