@@ -994,7 +994,7 @@
                     <div class="unit-content">
                         <span class="unit-name">Ubiquiti 48-Port Switch</span>
                         <span class="unit-role">Managed Switch</span>
-                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span></div>
+                        <div class="port-dots"><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot"></span><span class="port-dot active-port"></span><span class="port-dot"></span></div>
                     </div>
                 </div>
                 <div class="rack-unit size-4u" data-equipment-id="canterbury"
@@ -1042,12 +1042,173 @@
             <div class="guides-section">
                 <h2>Configuration Guides</h2>
                 
+                <details class="guide-item" id="guide-forgejo-migration-guide">
+                    <summary class="guide-summary">
+                        <span class="guide-marker">▸</span>
+                        <span class="guide-title">Self-Hosted Git with Forgejo on Unraid</span>
+                        <span class="guide-date">2026-08-03</span>
+                        <button class="guide-permalink" title="Copy link to this guide" onclick="copyGuideLink('guide-forgejo-migration-guide')"><i class="fas fa-link"></i></button>
+                        <div class="guide-tags"><span class="guide-tag">forgejo</span><span class="guide-tag">git</span><span class="guide-tag">unraid</span><span class="guide-tag">docker</span><span class="guide-tag">postgresql</span><span class="guide-tag">self-hosting</span><span class="guide-tag">devops</span></div>
+                    </summary>
+                    <div class="guide-body">
+                        
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Architecture Overview</h3>
+                        
+                        <div class="guide-phase-content"><p>This guide covers deploying a self-hosted Forgejo instance on Unraid with a PostgreSQL backend, fronted by Nginx Proxy Manager for secure external access via a custom subdomain.</p><p>Forgejo is a community-hardened fork of Gitea, providing a lightweight, self-contained Git server with issues, pull requests, CI/CD (Forgejo Actions), and a full API compatible with Gitea's tooling. The official CLI is <code>tea</code> (originally Gitea's CLI), which works identically with Forgejo.</p><p>Why self-host git instead of using GitHub? The primary motivation for this migration was GitHub's Terms of Service, which limit free accounts to a single machine user per personal account. In a multi-agent setup where each agent needs its own Git identity, this cap is quickly reached. Self-hosting removes the limit entirely — you can create as many users as your infrastructure needs.</p><p><strong>Traffic flow:</strong> Git client → Cloudflare (proxy) → Nginx Proxy Manager → Forgejo container (port 3003) → PostgreSQL database.</p><p><strong>Agent tooling:</strong> Each agent uses <code>tea</code> CLI (v0.15.1) for Git operations and a <code>forgejo-api</code> wrapper script for direct API calls (reviews, comments, diffs). Git authentication is handled transparently via <code>tea login helper</code> as a git credential helper.</p></div>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Prerequisites</h3>
+                        
+                        <div class="guide-phase-content"><p>Before starting, confirm the following:</p><p>&nbsp;&nbsp;• A Unraid server with Docker and Docker Compose available</p><p>&nbsp;&nbsp;• Nginx Proxy Manager already running (or follow the reverse proxy guide to set it up first)</p><p>&nbsp;&nbsp;• A domain with Cloudflare DNS pointing to your server (wildcard A record recommended)</p><p>&nbsp;&nbsp;• A ready-to-use subdomain (e.g. <code>git.yourdomain.com</code>)</p><p>&nbsp;&nbsp;• Basic familiarity with the Unraid terminal or SSH access to the server</p></div>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 1: Deploy Forgejo + PostgreSQL</h3>
+                        <div class="guide-phase-subtitle">Forgejo runs as a Docker container with a companion PostgreSQL database. A separate <code>.env</code> file stores the database password.</div>
+                        <ol class="guide-steps"><li><strong>Create the data directories:</strong> SSH into your Unraid server and create the Forgejo data directory structure:</li><li>&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/forgejo/data</code></li><li>&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/forgejo/database</code></li><li><strong>Create the <code>.env</code> file:</strong></li><li>&nbsp;&nbsp;<code>nano /mnt/user/appdata/forgejo/.env</code></li><li>Paste the following, replacing the password with a strong value:</li><li class="guide-step-codeblock"><div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> .env</span>
+                        <button class="guide-codeblock-copy" data-target="codeblock-0" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="codeblock-0" class="language-ini">FORGEJO_DATABASE_PASSWORD=&lt;your-strong-password-here&gt;</code></pre>
+                </div></li><li><strong>Create the Docker Compose file:</strong></li><li>&nbsp;&nbsp;<code>nano /mnt/user/appdata/forgejo/docker-compose.yml</code></li><li>Paste the following compose file:</li><li class="guide-step-codeblock"><div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> docker-compose.yml</span>
+                        <button class="guide-codeblock-copy" data-target="codeblock-1" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="codeblock-1" class="language-yaml">networks:
+  forgejo:
+    external: false
+
+services:
+  server:
+    image: codeberg.org/forgejo/forgejo:16
+    container_name: forgejo
+    restart: always
+    networks:
+      - forgejo
+    ports:
+      - '3003:3000'
+    volumes:
+      - /mnt/user/appdata/forgejo/data:/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - TZ=America/New_York
+      - FORGEJO__database__DB_TYPE=postgres
+      - FORGEJO__database__HOST=database:5432
+      - FORGEJO__database__NAME=forgejo
+      - FORGEJO__database__USER=forgejo
+      - FORGEJO__database__PASSWD=${FORGEJO_DATABASE_PASSWORD}
+      - FORGEJO__server__DOMAIN=git.yourdomain.com
+      - FORGEJO__server__ROOT_URL=https://git.yourdomain.com
+      - FORGEJO__server__HTTP_PORT=3000
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:17
+    container_name: forgejo-database
+    restart: always
+    networks:
+      - forgejo
+    volumes:
+      - /mnt/user/appdata/forgejo/database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=forgejo
+      - POSTGRES_USER=forgejo
+      - POSTGRES_PASSWORD=${FORGEJO_DATABASE_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forgejo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5</code></pre>
+                </div></li><li>The key environment variables configure Forgejo to connect to the PostgreSQL container. The <code>depends_on</code> with <code>condition: service_healthy</code> ensures Forgejo waits for PostgreSQL to be fully ready before starting — this prevents the crashloop that occurs when Forgejo starts before the database is initialized.</li><li><strong>Start the stack:</strong></li><li>&nbsp;&nbsp;<code>cd /mnt/user/appdata/forgejo && docker compose up -d</code></li><li>Forgejo will be accessible at <code>http://YOUR_SERVER_IP:3003</code>. The initial setup wizard should have the database fields pre-populated from the environment variables.</li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 2: Initial Setup Wizard</h3>
+                        <div class="guide-phase-subtitle">Access Forgejo directly via its LAN IP and port, then configure the instance through the web UI.</div>
+                        <ol class="guide-steps"><li>Open <code>http://YOUR_SERVER_IP:3003</code> in a browser. You should see the Forgejo setup wizard with the database fields already filled in from the environment variables.</li><li>Under <strong>General Settings</strong>:</li><li>&nbsp;&nbsp;• Instance Title: choose something meaningful (e.g. <code>Harrsch-Industries</code>)</li><li>&nbsp;&nbsp;• Server Domain: <code>git.yourdomain.com</code></li><li>&nbsp;&nbsp;• Base URL: <code>https://git.yourdomain.com</code></li><li>&nbsp;&nbsp;• Disable self-registration: <code>true</code> (recommended)</li><li>Under <strong>Server and Third-Party Service Settings</strong> (Optional settings):</li><li>&nbsp;&nbsp;• Disable OpenID sign-in: <code>false</code></li><li>&nbsp;&nbsp;• Require sign-in to view content: <code>true</code> (recommended for private server)</li><li>&nbsp;&nbsp;• Allow creation of organizations by default: <code>false</code> (recommended)</li><li>Under <strong>Administrator Account Settings</strong>:</li><li>&nbsp;&nbsp;• Create an admin account. A two-account approach is recommended: one admin user for instance management, and a separate personal user for daily work.</li><li>Click <strong>Install Forgejo</strong>. The setup may take 30–60 seconds as it creates the database tables. Do not refresh the page during this time.</li><li>After installation, log in and create your organization (e.g. <code>Harrsch-Industries</code>) via the top-right avatar → Dashboard → Organizations → New Organization.</li><li><em>Note: Accessing the setup wizard via the LAN IP after the domain is configured may cause a redirect loop. Always use the configured domain (e.g. <code>https://git.yourdomain.com</code>) for the initial setup if possible. If you must use the LAN IP, temporarily remove the <code>ROOT_URL</code> and <code>DOMAIN</code> environment variables, complete the wizard, then add them back.</em></li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 3: Configure Nginx Proxy Manager</h3>
+                        <div class="guide-phase-subtitle">Expose Forgejo through NPM for secure external access with automatic SSL.</div>
+                        <ol class="guide-steps"><li>In Nginx Proxy Manager → Proxy Hosts → Add Proxy Host.</li><li>Domain Names: <code>git.yourdomain.com</code>.</li><li>Scheme: <code>http</code>.</li><li>Forward Hostname/IP: your Unraid server's LAN IP.</li><li>Forward Port: <code>3003</code>.</li><li>Toggle Block Common Exploits → on.</li><li>SSL tab → select your wildcard cert → toggle Force SSL and HTTP/2 Support → Save.</li><li>Ensure the Cloudflare DNS entry for <code>git.yourdomain.com</code> exists and is proxied (orange cloud).</li><li>Test by visiting <code>https://git.yourdomain.com</code> — you should see the Forgejo login page.</li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 4: Create Users and Organizations</h3>
+                        <div class="guide-phase-subtitle">Create machine users for each agent and add them to the organization with appropriate permissions.</div>
+                        <ol class="guide-steps"><li>In Forgejo → Site Administration (top-right avatar) → Identity & Access → User Accounts → Create User Account.</li><li>Create a user for each autonomous agent: <code>hi-pm-agent</code>, <code>hi-eng-agent</code>, <code>hi-devops-agent</code>, <code>hi-security-agent</code>.</li><li>Use the email convention <code>harrsch.agents+<role>@gmail.com</code> (or your own pattern).</li><li>For each user, create a personal access token: Settings → Applications → Generate Token with scopes: <code>write:repository</code>, <code>write:issue</code>, <code>read:user</code>, <code>read:admin</code>.</li><li>In the organization → Teams → create an <code>agents</code> team with admin permissions on all repositories, and add all machine users to it.</li><li>Alternatively, use the Forgejo API from an admin account to create users, tokens, and team memberships programmatically:</li><li class="guide-step-codeblock"><div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> bulk-setup.sh</span>
+                        <button class="guide-codeblock-copy" data-target="codeblock-2" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="codeblock-2" class="language-bash"># Add user to team
+curl -X PUT -H "Authorization: token &lt;ADMIN_PAT&gt;" \
+  "https://git.yourdomain.com/api/v1/teams/&lt;TEAM_ID&gt;/members/&lt;USERNAME&gt;"
+
+# Create PAT for user
+curl -X POST -H "Authorization: token &lt;ADMIN_PAT&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"hermes-agent","scopes":["write:repository","write:issue","read:user","read:admin"]}' \
+  "https://git.yourdomain.com/api/v1/admin/users/&lt;USERNAME&gt;/tokens"</code></pre>
+                </div></li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 5: Configure Agent Tooling</h3>
+                        <div class="guide-phase-subtitle">Install the tea CLI and set up git credential helpers on each agent VM.</div>
+                        <ol class="guide-steps"><li><strong>Install the tea CLI</strong> on each agent's Linux user:</li><li>&nbsp;&nbsp;<code>sudo -u &lt;agent&gt; curl -sL 'https://gitea.com/gitea/tea/releases/download/v0.15.1/tea-0.15.1-linux-amd64' -o ~agent/.local/bin/tea</code></li><li>&nbsp;&nbsp;<code>sudo -u &lt;agent&gt; chmod +x ~agent/.local/bin/tea</code></li><li><strong>Create the forgejo-api helper script</strong> (wraps curl with auth from the <code>FORGEJO_TOKEN</code> environment variable, avoiding inline credential exposure in cron prompts):</li><li class="guide-step-codeblock"><div class="guide-codeblock">
+                    <div class="guide-codeblock-header">
+                        <span class="guide-codeblock-filename"><i class="fas fa-file-code"></i> ~/.local/bin/forgejo-api</span>
+                        <button class="guide-codeblock-copy" data-target="codeblock-3" onclick="copyCodeblock(this)" title="Copy to clipboard">
+                            <i class="fa-regular fa-copy"></i> copy
+                        </button>
+                    </div>
+                    <pre class="guide-codeblock-content"><code id="codeblock-3" class="language-bash">#!/bin/bash
+CURL="/usr/bin/curl"
+METHOD="$1"
+API_PATH="$2"
+BODY="$3"
+BASE_URL="https://git.yourdomain.com/api/v1"
+
+if [ "$METHOD" = "GET" ]; then
+  $CURL -sf -H "Authorization: token $FORGEJO_TOKEN" "$BASE_URL$API_PATH"
+elif [ "$METHOD" = "POST" ] &amp;&amp; [ -n "$BODY" ]; then
+  $CURL -sf -X POST -H "Authorization: token $FORGEJO_TOKEN" -H "Content-Type: application/json" -d "$BODY" "$BASE_URL$API_PATH"
+elif [ "$METHOD" = "POST" ]; then
+  $CURL -sf -X POST -H "Authorization: token $FORGEJO_TOKEN" "$BASE_URL$API_PATH"
+else
+  echo "Usage: forgejo-api GET|POST /path [body]"
+  exit 1
+fi</code></pre>
+                </div></li><li><strong>Log in with tea:</strong></li><li>&nbsp;&nbsp;<code>tea login add --name forgejo --url https://git.yourdomain.com --token &lt;PAT&gt;</code></li><li><strong>Register the git credential helper</strong> so <code>git push</code> and <code>git clone</code> authenticate transparently:</li><li>&nbsp;&nbsp;<code>tea logins helper setup</code></li><li>Then fix the helper to use the absolute path (since <code>~/.local/bin</code> may not be in PATH):</li><li>&nbsp;&nbsp;<code>git config --global --replace-all credential.https://git.yourdomain.com.helper "!/home/&lt;agent&gt;/.local/bin/tea logins helper"</code></li><li><strong>Add the PAT to the agent's environment:</strong></li><li>&nbsp;&nbsp;<code>echo 'FORGEJO_TOKEN=&lt;PAT&gt;' >> ~agent/.hermes/.env</code></li><li><strong>Update git remotes</strong> on any existing cloned repos to point to Forgejo:</li><li>&nbsp;&nbsp;<code>git remote set-url origin https://git.yourdomain.com/ORG/REPO.git</code></li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">Phase 6: Migrate Repos from GitHub</h3>
+                        <div class="guide-phase-subtitle">Clone existing repos from GitHub as mirrors and push them to Forgejo. This preserves the full commit history, all branches, and all tags. Issues and PRs are not migrated — they are recreated in Forgejo as needed.</div>
+                        <ol class="guide-steps"><li>For each repo to migrate, create an empty repo in Forgejo first via the API or web UI, then mirror-push:</li><li>&nbsp;&nbsp;<code>git clone --mirror https://github.com/ORG/REPO.git</code></li><li>&nbsp;&nbsp;<code>cd REPO.git</code></li><li>&nbsp;&nbsp;<code>git push --mirror https://git.yourdomain.com/ORG/REPO.git</code></li><li>After migration, add the <code>FORGEJO_TOKEN</code> to each agent's <code>.env</code> file and update the <code>GITHUB_TOKEN</code> reference in cron prompts to use <code>tea</code> and <code>forgejo-api</code> instead of <code>gh</code>.</li></ol>
+                    </div>
+                    <div class="guide-phase">
+                        <h3 class="guide-phase-heading">tea CLI Reference</h3>
+                        
+                        <div class="guide-phase-content"><p>The <code>tea</code> CLI is the official Gitea/Forgejo command-line tool. Key commands for agent automation:</p><p><table><thead><tr><th>Action</th><th>Command</th></tr></thead><tbody></p><p><tr><td>List PRs (org-wide)</td><td><code>tea issues list --login forgejo --owner ORG --kind pulls --state open --output json</code></td></tr></p><p><tr><td>List issues (assigned)</td><td><code>tea issues list --login forgejo --owner ORG --assignee USER --state open --output json</code></td></tr></p><p><tr><td>View PR diff</td><td><code>forgejo-api GET /repos/ORG/REPO/pulls/N.diff</code></td></tr></p><p><tr><td>Submit review</td><td><code>forgejo-api POST /repos/ORG/REPO/pulls/N/reviews '{"event":"APPROVED|REQUEST_CHANGES","body":"..."}'</code></td></tr></p><p><tr><td>Merge PR</td><td><code>tea pulls merge N --repo ORG/REPO --style squash --login forgejo</code></td></tr></p><p><tr><td>Add reviewer</td><td><code>tea pulls edit N --repo ORG/REPO --add-reviewers USER --login forgejo</code></td></tr></p><p><tr><td>Create issue</td><td><code>tea issues create --repo ORG/REPO --title "..." --login forgejo</code></td></tr></p><p><tr><td>Comment on PR</td><td><code>forgejo-api POST /repos/ORG/REPO/issues/N/comments '{"body":"..."}'</code></td></tr></p><p><tr><td>Create PR</td><td><code>tea pulls create --repo ORG/REPO --base main --head BRANCH --title "..." --login forgejo</code></td></tr></p><p><tr><td>Checkout PR</td><td><code>git fetch origin && git checkout BRANCH</code></td></tr></p><p></tbody></table></p></div>
+                    </div>
+                    </div>
+                </details>
                 <details class="guide-item" id="guide-hermes-agent-workflow">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Multi-Agent Workflow with Hermes Agents</span>
                         <span class="guide-date">2026-08-03</span>
-                        <a href="#guide-hermes-agent-workflow" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
+                        <button class="guide-permalink" title="Copy link to this guide" onclick="copyGuideLink('guide-hermes-agent-workflow')"><i class="fas fa-link"></i></button>
                         <div class="guide-tags"><span class="guide-tag">hermes</span><span class="guide-tag">agents</span><span class="guide-tag">forgejo</span><span class="guide-tag">automation</span><span class="guide-tag">homelab</span><span class="guide-tag">devops</span><span class="guide-tag">docker</span><span class="guide-tag">self-hosting</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1055,12 +1216,12 @@
                     <div class="guide-phase">
                         <h3 class="guide-phase-heading">Architecture Overview</h3>
                         
-                        <div class="guide-phase-content"><p>This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, and deploy to staging.</p><p>The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own Forgejo user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through Forgejo issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.</p><p><strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.</p><p>The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely.</p><p><strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments. All LLM calls go through OpenRouter.</p></div>
+                        <div class="guide-phase-content"><p>This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, and deploy to staging.</p><p>The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own Forgejo user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through Forgejo issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.</p><p><strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.</p><p>The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely. The full Forgejo deployment process is documented in the <a href="#guide-forgejo-migration-guide" class="guide-crossref">Self-Hosted Git with Forgejo guide</a>.</p><p><strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments. All LLM calls go through OpenRouter.</p></div>
                     </div>
                     <div class="guide-phase">
                         <h3 class="guide-phase-heading">Agent Setup Pattern</h3>
                         <div class="guide-phase-subtitle">Every agent follows this identical bootstrap procedure. Captured as a reusable skill in the agent-onboarding skill in the skill library.</div>
-                        <ol class="guide-steps"><li>Create Linux user on Lion's Rest Inn with Docker group access</li><li>Generate SSH key and GPG signing key (ed25519)</li><li>Create Forgejo user account with plus-addressed email (harrsch.agents+<agent>@gmail.com)</li><li>Upload SSH public key + GPG public key, add to Harrsch-Industries org under the agents team</li><li>Generate a Forgejo PAT (scopes: write:repository, write:issue, read:user, read:admin)</li><li>Install Hermes via <code>uv tool install hermes-agent --python python3</code> (never a local venv)</li><li>Write config.yaml with model, provider, and persona system prompt</li><li>Wire PAT via <code>tea login add</code> and register the git credential helper (<code>tea login helper setup</code>), deploy the <code>forgejo-api</code> wrapper script</li><li>Create cron jobs with <code>--workdir /home/&lt;agent&gt;</code> to avoid .git permission errors</li></ol>
+                        <ol class="guide-steps"><li>Create Linux user on the Agent VM with Docker group access</li><li>Generate SSH key and GPG signing key (ed25519)</li><li>Create Forgejo user account with plus-addressed email (harrsch.agents+<agent>@gmail.com)</li><li>Upload SSH public key + GPG public key, add to Harrsch-Industries org under the agents team</li><li>Generate a Forgejo PAT (scopes: write:repository, write:issue, read:user, read:admin)</li><li>Install Hermes via <code>uv tool install hermes-agent --python python3</code> (never a local venv)</li><li>Write config.yaml with model, provider, and persona system prompt</li><li>Wire PAT via <code>tea login add</code> and register the git credential helper (<code>tea login helper setup</code>), deploy the <code>forgejo-api</code> wrapper script</li><li>Create cron jobs with <code>--workdir /home/&lt;agent&gt;</code> to avoid .git permission errors</li></ol>
                     </div>
                     <div class="guide-phase">
                         <h3 class="guide-phase-heading">The Agents</h3>
@@ -1099,7 +1260,7 @@
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Self-Hosted Reverse Proxy with Cloudflare DDNS</span>
                         <span class="guide-date">2026-04-23</span>
-                        <a href="#guide-homelab-reverse-proxy-ddns" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
+                        <button class="guide-permalink" title="Copy link to this guide" onclick="copyGuideLink('guide-homelab-reverse-proxy-ddns')"><i class="fas fa-link"></i></button>
                         <div class="guide-tags"><span class="guide-tag">networking</span><span class="guide-tag">dns</span><span class="guide-tag">unraid</span><span class="guide-tag">cloudflare</span><span class="guide-tag">nginx</span><span class="guide-tag">self-hosting</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1201,7 +1362,7 @@
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">Global Ad-Blocking via Unraid, Pi-hole, and Tailscale</span>
                         <span class="guide-date">2026-04-04</span>
-                        <a href="#guide-pihole-tailscale-adblocking" class="guide-permalink" title="Link to this guide" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>
+                        <button class="guide-permalink" title="Copy link to this guide" onclick="copyGuideLink('guide-pihole-tailscale-adblocking')"><i class="fas fa-link"></i></button>
                         <div class="guide-tags"><span class="guide-tag">networking</span><span class="guide-tag">dns</span><span class="guide-tag">vpn</span><span class="guide-tag">unraid</span></div>
                     </summary>
                     <div class="guide-body">
@@ -1497,6 +1658,50 @@ SqHVfKT851jLw70Qopk=
                 }, 2000);
             });
         }
+
+        // ── Copy Guide Link to Clipboard ──
+        function copyGuideLink(guideId) {
+            const url = window.location.origin + window.location.pathname + '#' + guideId;
+            const btn = document.querySelector(`[onclick*="${guideId}"]`);
+            const icon = btn ? btn.querySelector('i') : null;
+
+            function showCopied() {
+                if (!icon) return;
+                icon.className = 'fas fa-check';
+                if (btn) btn.classList.add('copied');
+                setTimeout(() => {
+                    icon.className = 'fas fa-link';
+                    if (btn) btn.classList.remove('copied');
+                }, 2000);
+            }
+
+            // Try modern clipboard API, fallback to older method
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(showCopied).catch(() => {
+                    fallbackCopy(url, showCopied);
+                });
+            } else {
+                fallbackCopy(url, showCopied);
+            }
+        }
+
+        function fallbackCopy(text, callback) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                callback();
+            } catch (e) {
+                // Last resort: prompt the user
+                prompt('Copy this link:', text);
+            }
+            document.body.removeChild(textarea);
+        }
+
     // ── Guide Deep-Link: hash-based direct linking ──
         function openGuideFromHash() {
             const hash = location.hash;

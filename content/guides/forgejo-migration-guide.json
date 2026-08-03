@@ -1,0 +1,177 @@
+{
+  "id": "forgejo-migration-guide",
+  "title": "Self-Hosted Git with Forgejo on Unraid",
+  "date": "2026-08-03",
+  "tags": [
+    "forgejo",
+    "git",
+    "unraid",
+    "docker",
+    "postgresql",
+    "self-hosting",
+    "devops"
+  ],
+  "sections": [
+    {
+      "heading": "Architecture Overview",
+      "content": [
+        "This guide covers deploying a self-hosted Forgejo instance on Unraid with a PostgreSQL backend, fronted by Nginx Proxy Manager for secure external access via a custom subdomain.",
+        "Forgejo is a community-hardened fork of Gitea, providing a lightweight, self-contained Git server with issues, pull requests, CI/CD (Forgejo Actions), and a full API compatible with Gitea's tooling. The official CLI is <code>tea</code> (originally Gitea's CLI), which works identically with Forgejo.",
+        "Why self-host git instead of using GitHub? The primary motivation for this migration was GitHub's Terms of Service, which limit free accounts to a single machine user per personal account. In a multi-agent setup where each agent needs its own Git identity, this cap is quickly reached. Self-hosting removes the limit entirely — you can create as many users as your infrastructure needs.",
+        "<strong>Traffic flow:</strong> Git client → Cloudflare (proxy) → Nginx Proxy Manager → Forgejo container (port 3003) → PostgreSQL database.",
+        "<strong>Agent tooling:</strong> Each agent uses <code>tea</code> CLI (v0.15.1) for Git operations and a <code>forgejo-api</code> wrapper script for direct API calls (reviews, comments, diffs). Git authentication is handled transparently via <code>tea login helper</code> as a git credential helper."
+      ]
+    },
+    {
+      "heading": "Prerequisites",
+      "content": [
+        "Before starting, confirm the following:",
+        "&nbsp;&nbsp;• A Unraid server with Docker and Docker Compose available",
+        "&nbsp;&nbsp;• Nginx Proxy Manager already running (or follow the reverse proxy guide to set it up first)",
+        "&nbsp;&nbsp;• A domain with Cloudflare DNS pointing to your server (wildcard A record recommended)",
+        "&nbsp;&nbsp;• A ready-to-use subdomain (e.g. <code>git.yourdomain.com</code>)",
+        "&nbsp;&nbsp;• Basic familiarity with the Unraid terminal or SSH access to the server"
+      ]
+    },
+    {
+      "heading": "Phase 1: Deploy Forgejo + PostgreSQL",
+      "subtitle": "Forgejo runs as a Docker container with a companion PostgreSQL database. A separate <code>.env</code> file stores the database password.",
+      "steps": [
+        "<strong>Create the data directories:</strong> SSH into your Unraid server and create the Forgejo data directory structure:",
+        "&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/forgejo/data</code>",
+        "&nbsp;&nbsp;<code>mkdir -p /mnt/user/appdata/forgejo/database</code>",
+        "<strong>Create the <code>.env</code> file:</strong>",
+        "&nbsp;&nbsp;<code>nano /mnt/user/appdata/forgejo/.env</code>",
+        "Paste the following, replacing the password with a strong value:",
+        {
+          "type": "codeblock",
+          "language": "ini",
+          "filename": ".env",
+          "code": "FORGEJO_DATABASE_PASSWORD=<your-strong-password-here>"
+        },
+        "<strong>Create the Docker Compose file:</strong>",
+        "&nbsp;&nbsp;<code>nano /mnt/user/appdata/forgejo/docker-compose.yml</code>",
+        "Paste the following compose file:",
+        {
+          "type": "codeblock",
+          "language": "yaml",
+          "filename": "docker-compose.yml",
+          "code": "networks:\n  forgejo:\n    external: false\n\nservices:\n  server:\n    image: codeberg.org/forgejo/forgejo:16\n    container_name: forgejo\n    restart: always\n    networks:\n      - forgejo\n    ports:\n      - '3003:3000'\n    volumes:\n      - /mnt/user/appdata/forgejo/data:/data\n      - /etc/localtime:/etc/localtime:ro\n    environment:\n      - USER_UID=1000\n      - USER_GID=1000\n      - TZ=America/New_York\n      - FORGEJO__database__DB_TYPE=postgres\n      - FORGEJO__database__HOST=database:5432\n      - FORGEJO__database__NAME=forgejo\n      - FORGEJO__database__USER=forgejo\n      - FORGEJO__database__PASSWD=${FORGEJO_DATABASE_PASSWORD}\n      - FORGEJO__server__DOMAIN=git.yourdomain.com\n      - FORGEJO__server__ROOT_URL=https://git.yourdomain.com\n      - FORGEJO__server__HTTP_PORT=3000\n    depends_on:\n      database:\n        condition: service_healthy\n\n  database:\n    image: postgres:17\n    container_name: forgejo-database\n    restart: always\n    networks:\n      - forgejo\n    volumes:\n      - /mnt/user/appdata/forgejo/database:/var/lib/postgresql/data\n    environment:\n      - POSTGRES_DB=forgejo\n      - POSTGRES_USER=forgejo\n      - POSTGRES_PASSWORD=${FORGEJO_DATABASE_PASSWORD}\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U forgejo\"]\n      interval: 5s\n      timeout: 5s\n      retries: 5"
+        },
+        "The key environment variables configure Forgejo to connect to the PostgreSQL container. The <code>depends_on</code> with <code>condition: service_healthy</code> ensures Forgejo waits for PostgreSQL to be fully ready before starting — this prevents the crashloop that occurs when Forgejo starts before the database is initialized.",
+        "<strong>Start the stack:</strong>",
+        "&nbsp;&nbsp;<code>cd /mnt/user/appdata/forgejo && docker compose up -d</code>",
+        "Forgejo will be accessible at <code>http://YOUR_SERVER_IP:3003</code>. The initial setup wizard should have the database fields pre-populated from the environment variables."
+      ]
+    },
+    {
+      "heading": "Phase 2: Initial Setup Wizard",
+      "subtitle": "Access Forgejo directly via its LAN IP and port, then configure the instance through the web UI.",
+      "steps": [
+        "Open <code>http://YOUR_SERVER_IP:3003</code> in a browser. You should see the Forgejo setup wizard with the database fields already filled in from the environment variables.",
+        "Under <strong>General Settings</strong>:",
+        "&nbsp;&nbsp;• Instance Title: choose something meaningful (e.g. <code>Harrsch-Industries</code>)",
+        "&nbsp;&nbsp;• Server Domain: <code>git.yourdomain.com</code>",
+        "&nbsp;&nbsp;• Base URL: <code>https://git.yourdomain.com</code>",
+        "&nbsp;&nbsp;• Disable self-registration: <code>true</code> (recommended)",
+        "Under <strong>Server and Third-Party Service Settings</strong> (Optional settings):",
+        "&nbsp;&nbsp;• Disable OpenID sign-in: <code>false</code>",
+        "&nbsp;&nbsp;• Require sign-in to view content: <code>true</code> (recommended for private server)",
+        "&nbsp;&nbsp;• Allow creation of organizations by default: <code>false</code> (recommended)",
+        "Under <strong>Administrator Account Settings</strong>:",
+        "&nbsp;&nbsp;• Create an admin account. A two-account approach is recommended: one admin user for instance management, and a separate personal user for daily work.",
+        "Click <strong>Install Forgejo</strong>. The setup may take 30–60 seconds as it creates the database tables. Do not refresh the page during this time.",
+        "After installation, log in and create your organization (e.g. <code>Harrsch-Industries</code>) via the top-right avatar → Dashboard → Organizations → New Organization.",
+        "<em>Note: Accessing the setup wizard via the LAN IP after the domain is configured may cause a redirect loop. Always use the configured domain (e.g. <code>https://git.yourdomain.com</code>) for the initial setup if possible. If you must use the LAN IP, temporarily remove the <code>ROOT_URL</code> and <code>DOMAIN</code> environment variables, complete the wizard, then add them back.</em>"
+      ]
+    },
+    {
+      "heading": "Phase 3: Configure Nginx Proxy Manager",
+      "subtitle": "Expose Forgejo through NPM for secure external access with automatic SSL.",
+      "steps": [
+        "In Nginx Proxy Manager → Proxy Hosts → Add Proxy Host.",
+        "Domain Names: <code>git.yourdomain.com</code>.",
+        "Scheme: <code>http</code>.",
+        "Forward Hostname/IP: your Unraid server's LAN IP.",
+        "Forward Port: <code>3003</code>.",
+        "Toggle Block Common Exploits → on.",
+        "SSL tab → select your wildcard cert → toggle Force SSL and HTTP/2 Support → Save.",
+        "Ensure the Cloudflare DNS entry for <code>git.yourdomain.com</code> exists and is proxied (orange cloud).",
+        "Test by visiting <code>https://git.yourdomain.com</code> — you should see the Forgejo login page."
+      ]
+    },
+    {
+      "heading": "Phase 4: Create Users and Organizations",
+      "subtitle": "Create machine users for each agent and add them to the organization with appropriate permissions.",
+      "steps": [
+        "In Forgejo → Site Administration (top-right avatar) → Identity & Access → User Accounts → Create User Account.",
+        "Create a user for each autonomous agent: <code>hi-pm-agent</code>, <code>hi-eng-agent</code>, <code>hi-devops-agent</code>, <code>hi-security-agent</code>.",
+        "Use the email convention <code>harrsch.agents+<role>@gmail.com</code> (or your own pattern).",
+        "For each user, create a personal access token: Settings → Applications → Generate Token with scopes: <code>write:repository</code>, <code>write:issue</code>, <code>read:user</code>, <code>read:admin</code>.",
+        "In the organization → Teams → create an <code>agents</code> team with admin permissions on all repositories, and add all machine users to it.",
+        "Alternatively, use the Forgejo API from an admin account to create users, tokens, and team memberships programmatically:",
+        {
+          "type": "codeblock",
+          "language": "bash",
+          "filename": "bulk-setup.sh",
+          "code": "# Add user to team\ncurl -X PUT -H \"Authorization: token <ADMIN_PAT>\" \\\n  \"https://git.yourdomain.com/api/v1/teams/<TEAM_ID>/members/<USERNAME>\"\n\n# Create PAT for user\ncurl -X POST -H \"Authorization: token <ADMIN_PAT>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\":\"hermes-agent\",\"scopes\":[\"write:repository\",\"write:issue\",\"read:user\",\"read:admin\"]}' \\\n  \"https://git.yourdomain.com/api/v1/admin/users/<USERNAME>/tokens\""
+        }
+      ]
+    },
+    {
+      "heading": "Phase 5: Configure Agent Tooling",
+      "subtitle": "Install the tea CLI and set up git credential helpers on each agent VM.",
+      "steps": [
+        "<strong>Install the tea CLI</strong> on each agent's Linux user:",
+        "&nbsp;&nbsp;<code>sudo -u &lt;agent&gt; curl -sL 'https://gitea.com/gitea/tea/releases/download/v0.15.1/tea-0.15.1-linux-amd64' -o ~agent/.local/bin/tea</code>",
+        "&nbsp;&nbsp;<code>sudo -u &lt;agent&gt; chmod +x ~agent/.local/bin/tea</code>",
+        "<strong>Create the forgejo-api helper script</strong> (wraps curl with auth from the <code>FORGEJO_TOKEN</code> environment variable, avoiding inline credential exposure in cron prompts):",
+        {
+          "type": "codeblock",
+          "language": "bash",
+          "filename": "~/.local/bin/forgejo-api",
+          "code": "#!/bin/bash\nCURL=\"/usr/bin/curl\"\nMETHOD=\"$1\"\nAPI_PATH=\"$2\"\nBODY=\"$3\"\nBASE_URL=\"https://git.yourdomain.com/api/v1\"\n\nif [ \"$METHOD\" = \"GET\" ]; then\n  $CURL -sf -H \"Authorization: token $FORGEJO_TOKEN\" \"$BASE_URL$API_PATH\"\nelif [ \"$METHOD\" = \"POST\" ] && [ -n \"$BODY\" ]; then\n  $CURL -sf -X POST -H \"Authorization: token $FORGEJO_TOKEN\" -H \"Content-Type: application/json\" -d \"$BODY\" \"$BASE_URL$API_PATH\"\nelif [ \"$METHOD\" = \"POST\" ]; then\n  $CURL -sf -X POST -H \"Authorization: token $FORGEJO_TOKEN\" \"$BASE_URL$API_PATH\"\nelse\n  echo \"Usage: forgejo-api GET|POST /path [body]\"\n  exit 1\nfi"
+        },
+        "<strong>Log in with tea:</strong>",
+        "&nbsp;&nbsp;<code>tea login add --name forgejo --url https://git.yourdomain.com --token &lt;PAT&gt;</code>",
+        "<strong>Register the git credential helper</strong> so <code>git push</code> and <code>git clone</code> authenticate transparently:",
+        "&nbsp;&nbsp;<code>tea logins helper setup</code>",
+        "Then fix the helper to use the absolute path (since <code>~/.local/bin</code> may not be in PATH):",
+        "&nbsp;&nbsp;<code>git config --global --replace-all credential.https://git.yourdomain.com.helper \"!/home/&lt;agent&gt;/.local/bin/tea logins helper\"</code>",
+        "<strong>Add the PAT to the agent's environment:</strong>",
+        "&nbsp;&nbsp;<code>echo 'FORGEJO_TOKEN=&lt;PAT&gt;' >> ~agent/.hermes/.env</code>",
+        "<strong>Update git remotes</strong> on any existing cloned repos to point to Forgejo:",
+        "&nbsp;&nbsp;<code>git remote set-url origin https://git.yourdomain.com/ORG/REPO.git</code>"
+      ]
+    },
+    {
+      "heading": "Phase 6: Migrate Repos from GitHub",
+      "subtitle": "Clone existing repos from GitHub as mirrors and push them to Forgejo. This preserves the full commit history, all branches, and all tags. Issues and PRs are not migrated — they are recreated in Forgejo as needed.",
+      "steps": [
+        "For each repo to migrate, create an empty repo in Forgejo first via the API or web UI, then mirror-push:",
+        "&nbsp;&nbsp;<code>git clone --mirror https://github.com/ORG/REPO.git</code>",
+        "&nbsp;&nbsp;<code>cd REPO.git</code>",
+        "&nbsp;&nbsp;<code>git push --mirror https://git.yourdomain.com/ORG/REPO.git</code>",
+        "After migration, add the <code>FORGEJO_TOKEN</code> to each agent's <code>.env</code> file and update the <code>GITHUB_TOKEN</code> reference in cron prompts to use <code>tea</code> and <code>forgejo-api</code> instead of <code>gh</code>."
+      ]
+    },
+    {
+      "heading": "tea CLI Reference",
+      "content": [
+        "The <code>tea</code> CLI is the official Gitea/Forgejo command-line tool. Key commands for agent automation:",
+        "<table><thead><tr><th>Action</th><th>Command</th></tr></thead><tbody>",
+        "<tr><td>List PRs (org-wide)</td><td><code>tea issues list --login forgejo --owner ORG --kind pulls --state open --output json</code></td></tr>",
+        "<tr><td>List issues (assigned)</td><td><code>tea issues list --login forgejo --owner ORG --assignee USER --state open --output json</code></td></tr>",
+        "<tr><td>View PR diff</td><td><code>forgejo-api GET /repos/ORG/REPO/pulls/N.diff</code></td></tr>",
+        "<tr><td>Submit review</td><td><code>forgejo-api POST /repos/ORG/REPO/pulls/N/reviews '{\"event\":\"APPROVED|REQUEST_CHANGES\",\"body\":\"...\"}'</code></td></tr>",
+        "<tr><td>Merge PR</td><td><code>tea pulls merge N --repo ORG/REPO --style squash --login forgejo</code></td></tr>",
+        "<tr><td>Add reviewer</td><td><code>tea pulls edit N --repo ORG/REPO --add-reviewers USER --login forgejo</code></td></tr>",
+        "<tr><td>Create issue</td><td><code>tea issues create --repo ORG/REPO --title \"...\" --login forgejo</code></td></tr>",
+        "<tr><td>Comment on PR</td><td><code>forgejo-api POST /repos/ORG/REPO/issues/N/comments '{\"body\":\"...\"}'</code></td></tr>",
+        "<tr><td>Create PR</td><td><code>tea pulls create --repo ORG/REPO --base main --head BRANCH --title \"...\" --login forgejo</code></td></tr>",
+        "<tr><td>Checkout PR</td><td><code>git fetch origin && git checkout BRANCH</code></td></tr>",
+        "</tbody></table>"
+      ]
+    }
+  ]
+}

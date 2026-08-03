@@ -299,6 +299,50 @@
                 }, 2000);
             });
         }
+
+        // ── Copy Guide Link to Clipboard ──
+        function copyGuideLink(guideId) {
+            const url = window.location.origin + window.location.pathname + '#' + guideId;
+            const btn = document.querySelector(`[onclick*="${guideId}"]`);
+            const icon = btn ? btn.querySelector('i') : null;
+
+            function showCopied() {
+                if (!icon) return;
+                icon.className = 'fas fa-check';
+                if (btn) btn.classList.add('copied');
+                setTimeout(() => {
+                    icon.className = 'fas fa-link';
+                    if (btn) btn.classList.remove('copied');
+                }, 2000);
+            }
+
+            // Try modern clipboard API, fallback to older method
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(showCopied).catch(() => {
+                    fallbackCopy(url, showCopied);
+                });
+            } else {
+                fallbackCopy(url, showCopied);
+            }
+        }
+
+        function fallbackCopy(text, callback) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                callback();
+            } catch (e) {
+                // Last resort: prompt the user
+                prompt('Copy this link:', text);
+            }
+            document.body.removeChild(textarea);
+        }
+
     // ── Guide Deep-Link: hash-based direct linking ──
         function openGuideFromHash() {
             const hash = location.hash;

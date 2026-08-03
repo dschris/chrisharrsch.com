@@ -19,7 +19,7 @@
         "This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, and deploy to staging.",
         "The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own Forgejo user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through Forgejo issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.",
         "<strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.",
-        "The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely.",
+        "The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely. The full Forgejo deployment process is documented in the <a href=\"#guide-forgejo-migration-guide\" class=\"guide-crossref\">Self-Hosted Git with Forgejo guide</a>.",
         "<strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments. All LLM calls go through OpenRouter."
       ]
     },
@@ -27,7 +27,7 @@
       "heading": "Agent Setup Pattern",
       "subtitle": "Every agent follows this identical bootstrap procedure. Captured as a reusable skill in the agent-onboarding skill in the skill library.",
       "steps": [
-        "Create Linux user on Lion's Rest Inn with Docker group access",
+        "Create Linux user on the Agent VM with Docker group access",
         "Generate SSH key and GPG signing key (ed25519)",
         "Create Forgejo user account with plus-addressed email (harrsch.agents+<agent>@gmail.com)",
         "Upload SSH public key + GPG public key, add to Harrsch-Industries org under the agents team",

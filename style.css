@@ -961,6 +961,11 @@ p {
     transition: opacity 0.2s ease, color 0.2s ease;
     text-decoration: none;
     margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem;
+    line-height: 1;
 }
 
 .guide-summary:hover .guide-permalink {
@@ -970,6 +975,22 @@ p {
 .guide-permalink:hover {
     opacity: 1 !important;
     color: var(--accent-color, #64c8ff);
+}
+
+.guide-permalink.copied {
+    opacity: 1 !important;
+    color: #34d399;
+}
+
+.guide-crossref {
+    color: var(--accent-color, #64c8ff);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.guide-crossref:hover {
+    text-decoration-style: solid;
 }
 
 .guide-body {
