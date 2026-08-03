@@ -218,7 +218,8 @@ const generateHomelabHTML = (homelab, guides) => {
                      data-role="${unit.role}"
                      data-icon="${unit.icon}"
                      data-specs='${JSON.stringify(unit.specs)}'
-                     data-services='${JSON.stringify(unit.services)}'>
+                     data-services='${JSON.stringify(unit.services)}'
+                     data-agents='${JSON.stringify(unit.agents || [])}'>
                     <span class="unit-indicator">&gt;</span>
                     <span class="led-dot ${ledClass}"></span>
                     <div class="unit-content">
@@ -238,7 +239,8 @@ const generateHomelabHTML = (homelab, guides) => {
                      data-role="${tower.role}"
                      data-icon="${tower.icon}"
                      data-specs='${JSON.stringify(tower.specs)}'
-                     data-services='${JSON.stringify(tower.services)}'>
+                     data-services='${JSON.stringify(tower.services)}'
+                     data-agents='${JSON.stringify(tower.agents || [])}'>
                     <span class="unit-indicator">&gt;</span>
                     <span class="tower-name">${tower.name}</span>
                     <span class="tower-role">${tower.role.split(' — ')[0]}</span>
@@ -305,11 +307,12 @@ const generateHomelabHTML = (homelab, guides) => {
         }).join('');
 
         return `
-                <details class="guide-item">
+                <details class="guide-item" id="guide-${guide.id}">
                     <summary class="guide-summary">
                         <span class="guide-marker">▸</span>
                         <span class="guide-title">${guide.title}</span>
                         <span class="guide-date">${guide.date}</span>
+                        <button class="guide-permalink" title="Copy link to this guide" onclick="copyGuideLink('guide-${guide.id}')"><i class="fas fa-link"></i></button>
                         <div class="guide-tags">${tagsHTML}</div>
                     </summary>
                     <div class="guide-body">

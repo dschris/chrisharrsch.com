@@ -220,6 +220,7 @@
             const icon = el.dataset.icon;
             const specs = JSON.parse(el.dataset.specs || '[]');
             const services = JSON.parse(el.dataset.services || '[]');
+            const agents = JSON.parse(el.dataset.agents || '[]');
 
             // Update active state
             document.querySelectorAll('.rack-unit.active, .tower-unit.active').forEach(u => u.classList.remove('active'));
@@ -239,6 +240,15 @@
                     </div>`;
             }
 
+            let agentsHTML = '';
+            if (agents.length > 0) {
+                agentsHTML = `
+                    <div class="detail-services" style="margin-top:3px">
+                        <span class="detail-services-label">active agents:</span>
+                        ${agents.map(a => `<span class="service-tag agent-tag"><i class="${a.icon}"></i> ${a.name}</span>`).join('')}
+                    </div>`;
+            }
+
             panel.innerHTML = `
                 <div class="detail-header">
                     ${icon ? `<span class="detail-icon"><i class="${icon}"></i></span>` : ''}
@@ -248,7 +258,8 @@
                     </div>
                 </div>
                 <div class="detail-specs">${specsHTML}</div>
-                ${servicesHTML}`;
+                ${servicesHTML}
+                ${agentsHTML}`;
         }
 
         // Attach event listeners to equipment units
@@ -288,6 +299,92 @@
                 }, 2000);
             });
         }
+
+        // ── Copy Guide Link to Clipboard ──
+        function copyGuideLink(guideId) {
+            const url = window.location.origin + window.location.pathname + '#' + guideId;
+            const btn = document.querySelector(`[onclick*="${guideId}"]`);
+            const icon = btn ? btn.querySelector('i') : null;
+
+            function showCopied() {
+                if (!icon) return;
+                icon.className = 'fas fa-check';
+                if (btn) btn.classList.add('copied');
+                setTimeout(() => {
+                    icon.className = 'fas fa-link';
+                    if (btn) btn.classList.remove('copied');
+                }, 2000);
+            }
+
+            // Try modern clipboard API, fallback to older method
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(showCopied).catch(() => {
+                    fallbackCopy(url, showCopied);
+                });
+            } else {
+                fallbackCopy(url, showCopied);
+            }
+        }
+
+        function fallbackCopy(text, callback) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                callback();
+            } catch (e) {
+                // Last resort: prompt the user
+                prompt('Copy this link:', text);
+            }
+            document.body.removeChild(textarea);
+        }
+
+    // ── Guide Deep-Link: hash-based direct linking ──
+        function openGuideFromHash() {
+            const hash = location.hash;
+            if (!hash || !hash.startsWith('#guide-')) return;
+            const guideId = hash.substring(1);
+            const guide = document.getElementById(guideId);
+            if (!guide) return;
+
+            // Switch to homelab section (index 4)
+            const homelabNav = document.querySelector('[data-section="homelab"]');
+            if (homelabNav) homelabNav.click();
+
+            // Open the details element
+            guide.setAttribute('open', '');
+
+            // Scroll to it after a brief delay for section transition
+            setTimeout(() => {
+                guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', openGuideFromHash);
+
+        // Handle initial hash on page load
+        if (location.hash && location.hash.startsWith('#guide-')) {
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', openGuideFromHash);
+            } else {
+                openGuideFromHash();
+            }
+        }
+
+        // Also handle when clicking nav items — if the hash is set, clear it
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (location.hash) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            });
+        });
     </script>
 </body>
 

@@ -89,6 +89,28 @@
         {
           "name": "Transfer Agent Platform",
           "icon": "fas fa-building-columns"
+        },
+        {
+          "name": "Forgejo",
+          "icon": "fas fa-code-branch"
+        }
+      ],
+      "agents": [
+        {
+          "name": "PM Agent",
+          "icon": "fas fa-robot"
+        },
+        {
+          "name": "Eng Agent",
+          "icon": "fas fa-code"
+        },
+        {
+          "name": "DevOps Agent",
+          "icon": "fas fa-gears"
+        },
+        {
+          "name": "Security Bot",
+          "icon": "fas fa-shield"
         }
       ]
     },
@@ -143,18 +165,20 @@
       }
     ],
     "services": [
-      {
-        "name": "Ollama",
-        "icon": "fas fa-brain"
-      },
-      {
-        "name": "ComfyUI",
-        "icon": "fas fa-palette"
-      },
-      {
-        "name": "Hermes",
-        "icon": "fas fa-comments"
-      }
-    ]
+            {
+              "name": "Ollama",
+              "icon": "fas fa-brain"
+            },
+            {
+              "name": "ComfyUI",
+              "icon": "fas fa-palette"
+            }
+          ],
+          "agents": [
+            {
+              "name": "Hermes",
+              "icon": "fas fa-comments"
+            }
+          ]
   }
 }

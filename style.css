@@ -722,7 +722,8 @@ p {
 /* Detail Panel */
 .equipment-detail-panel {
     position: relative;
-    min-height: 0;
+    min-height: 420px;
+    height: 420px;
     min-width: 0;
 }
 
@@ -831,6 +832,41 @@ p {
     color: var(--dim-color);
 }
 
+.agent-tag {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.3);
+}
+
+.agent-tag i {
+    color: #64c8ff;
+}
+
+/* Guide tables */
+.guide-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+}
+
+.guide-body th,
+.guide-body td {
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.guide-body th {
+    background: rgba(128, 128, 128, 0.1);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.guide-body td {
+    background: transparent;
+}
+
 /* ─── Guides Section ─── */
 
 .guides-section {
@@ -915,6 +951,46 @@ p {
     padding: 0.1rem 0.4rem;
     border-radius: 2px;
     border: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.guide-permalink {
+    color: var(--dim-color);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem;
+    line-height: 1;
+}
+
+.guide-summary:hover .guide-permalink {
+    opacity: 0.6;
+}
+
+.guide-permalink:hover {
+    opacity: 1 !important;
+    color: var(--accent-color, #64c8ff);
+}
+
+.guide-permalink.copied {
+    opacity: 1 !important;
+    color: #34d399;
+}
+
+.guide-crossref {
+    color: var(--accent-color, #64c8ff);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.guide-crossref:hover {
+    text-decoration-style: solid;
 }
 
 .guide-body {
