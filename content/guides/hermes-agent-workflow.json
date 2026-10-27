@@ -1,7 +1,7 @@
 {
   "id": "hermes-agent-workflow",
   "title": "Multi-Agent Workflow with Hermes Agents",
-  "date": "2026-10-10",
+  "date": "2026-10-27",
   "tags": [
     "hermes",
     "agents",
@@ -17,11 +17,11 @@
     {
       "heading": "Architecture Overview",
       "content": [
-        "This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, and deploy to staging.",
+        "This setup runs a fully autonomous multi-agent software development pipeline across two physical machines in a home lab. Three AI agents — Product Manager, Engineering Agent, and DevOps Agent — communicate asynchronously via a self-hosted Forgejo instance to triage issues, write code, review pull requests, run quality checks, deploy to staging, and ship production releases to the homelab’s bare-metal host.",
         "The agents run as Linux users on a VM called <strong>Lion's Rest Inn</strong>, hosted on the <strong>Canterbury</strong> Unraid server. Each agent has its own Forgejo user identity, Hermes profile, OpenRouter API key, SSH key, and GPG signing key. They are fully independent and communicate only through Forgejo issues, PRs, and reviews — no SSH, no file handoffs, no direct API calls between agents.",
-        "<strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging Deploy → Stakeholder merges.",
+        "<strong>Traffic flow:</strong> Stakeholder → Telegram or SSH CLI → PM Agent → Forgejo issues → Engineering Agent → Pull Requests → PM Review → DevOps Pipeline → Staging + Production Deploy → Stakeholder merges.",
         "The git host is Forgejo (<code>git.chrisharrsch.com</code>) running as a Docker container on Canterbury with a PostgreSQL backend, fronted by Nginx Proxy Manager. The previous GitHub org was replaced by Forgejo after GitHub's machine-account ToS limits capped the number of agent identities on a free plan — self-hosting removes the limit entirely. The full Forgejo deployment process is documented in the <a href=\"#guide-forgejo-migration-guide\" class=\"guide-crossref\">Self-Hosted Git with Forgejo guide</a>.",
-        "<strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments. All LLM calls go through OpenRouter."
+        "<strong>Stack:</strong> Three Hermes Agent v0.19.0 instances (uv tool install, no venvs), each with its own model and budget, running on Ubuntu 24.04 with Docker for staging deployments, plus an mTLS Docker context to the Canterbury bare-metal host for production. All LLM calls go through OpenRouter."
       ]
     },
     {
@@ -45,7 +45,7 @@
         "<table><thead><tr><th>Agent</th><th>Role</th><th>Model Tier</th><th>Budget</th><th>Cron</th></tr></thead><tbody>",
         "<tr><td><strong>PM Agent</strong></td><td>Stakeholder interface. Creates issues, reviews PRs, sends Telegram notifications.</td><td>Cost-effective reasoning (e.g. DeepSeek)</td><td>Moderate daily cap</td><td>Event-triggered — no polling</td></tr>",
         "<tr><td><strong>Engineering Agent</strong></td><td>Picks up issues, writes code, opens PRs. Fixes PRs when PM requests changes and re-requests review.</td><td>Stronger coding model</td><td>Largest daily cap</td><td>Event-triggered — no polling</td></tr>",
-        "<tr><td><strong>DevOps Agent</strong></td><td>Full pipeline owner. Runs lint, tests, security scan, deploys to staging, reports results.</td><td>Cost-effective reasoning</td><td>Smallest daily cap</td><td>Event-triggered — no polling</td></tr>",
+        "<tr><td><strong>DevOps Agent</strong></td><td>Full pipeline owner. Runs lint, tests, security scan, deploys to staging and production, reports results.</td><td>Cost-effective reasoning</td><td>Smallest daily cap</td><td>Event-triggered — no polling</td></tr>",
         "<tr><td><strong>Security Bot</strong></td><td>Automated security auditor. Static analysis (bandit, semgrep, OWASP Top 10), dependency vulnerability scan, dynamic analysis against staging deployments. Blocks merges on critical findings.</td><td>Frontier reasoning (e.g. Claude Opus)</td><td>Moderate daily cap</td><td>Event-triggered — planned</td></tr>",
         "</tbody></table>"
       ]
@@ -71,8 +71,28 @@
         "&nbsp;&nbsp;3. <strong>Staging Deploy</strong> — Docker Compose build and deploy to <code>/home/staging/</code>, verify healthcheck endpoint, run integration tests. Stacks are isolated by project and PR number.",
         "&nbsp;&nbsp;4. <strong>Cleanup &amp; Report</strong> — Tear down the staging stack, post a PR comment with per-stage pass/fail results. If all pass: approve the PR. If any fail: request changes with details.",
         "The Security Bot then performs a separate deep-dive audit on the final code and staging deployment — static analysis (OWASP Top 10, dependency CVEs, secret detection) plus dynamic checks on the running instance. Critical findings block the merge; lower-severity findings are filed as recommendations.",
-        "A Docker Compose staging template is at <code>/home/staging/templates/</code>. Forgejo Actions (a GitHub Actions-compatible CI system) is available on the instance for future pipeline automation.",
-        "Future goal: deploy containers directly to the Canterbury bare-metal host, currently blocked by incomplete Docker TLS configuration on Unraid."
+        "A Docker Compose staging template is at <code>/home/staging/templates/</code>. Forgejo Actions (a GitHub Actions-compatible CI system) drives both the agent-trigger workflow and the production-deploy workflow described below.",
+        "Production deploys go to the Canterbury bare-metal host over a dedicated mTLS Docker context — see the section below."
+      ]
+    },
+    {
+      "heading": "Production Deploys (Canterbury)",
+      "content": [
+        "Production releases run on the same bare-metal Unraid host that already runs Forgejo and Nginx Proxy Manager. The DevOps agent drives it through a dedicated Docker context over TLS — mutual TLS with a client certificate issued specifically for <code>hi-devops-agent</code> — so production access is authenticated and revoked by certificate, not by shared credentials.",
+        "When a PR labeled <code>deploy:prod</code> is merged to <code>main</code>, the repo’s <code>.forgejo/workflows/production-deploy.yml</code> fires, POSTs an <code>X-Gitea-Event: production_deploy</code> webhook to the local receiver (port 8899), and the receiver routes it to the DevOps agent. The agent loads the <code>devops/production-deploy</code> skill and follows it exactly:",
+        "&nbsp;&nbsp;1. <strong>Preflight</strong> — parse the PR’s <code>Deploy:</code> block (subdomain, port, healthcheck, websockets), verify the canterbury context, check the host port is free, confirm no NPM proxy conflict, and refuse with a <code>deploy-failed</code> label on any problem.",
+        "&nbsp;&nbsp;2. <strong>Environment</strong> — compare the repo’s <code>.env.example</code> variable names against the agent’s <code>prod-env/&lt;repo&gt;.env</code> (names only, never values). Missing file or keys → comment on the PR, label <code>deploy-failed</code>, stop.",
+        "&nbsp;&nbsp;3. <strong>Checkout &amp; build</strong> — clone at the exact merge commit SHA, then <code>docker --context canterbury compose build</code> then <code>up -d</code> under the <code>prod-&lt;repo&gt;</code> project name.",
+        "&nbsp;&nbsp;4. <strong>Route</strong> — create or update the Nginx Proxy Manager host via its API (wildcard Let’s Encrypt certificate, force SSL, HTTP/2, websocket support per the Deploy block).",
+        "&nbsp;&nbsp;5. <strong>Verify</strong> — three health checks: direct to the container port, through NPM on the LAN, and the public URL, retried for up to 90 seconds.",
+        "&nbsp;&nbsp;6. <strong>Report</strong> — comment the result on the PR, set the <code>deployed</code> (or <code>deploy-failed</code>) label, and write <code>deploy.json</code> so future merges redeploy with the same settings.",
+        "First deploy through this pipeline: <code>learning-roadmap</code> → <code>learn.chrisharrsch.com</code> (2026-10-27), all three health checks green, label and report handled entirely by the agent.",
+        "Key lessons from productionizing this path:",
+        "&nbsp;&nbsp;• The webhook receiver’s prompt templates support exactly four variables (<code>{number}</code>, <code>{title}</code>, <code>{url}</code>, <code>{repo}</code>) — any other placeholder (e.g. <code>{ref}</code>) crashes the route with a KeyError and silently drops the deploy event.",
+        "&nbsp;&nbsp;• The TLS client key and the CA key that signs it live on Canterbury’s flash storage and must never be deleted — losing the CA key makes it impossible to issue new client certificates, which blocks the docker context entirely.",
+        "&nbsp;&nbsp;• With a remote context, bind-mount sources resolve on Canterbury, not on the agent VM. Persistent data belongs in named volumes or a persistent appdata path on Canterbury’s array, never in the checkout.",
+        "&nbsp;&nbsp;• Every production command names the <code>canterbury</code> context explicitly — a bare <code>docker compose</code> silently targets staging.",
+        "&nbsp;&nbsp;• The labels <code>deploy:prod</code>, <code>deployed</code>, and <code>deploy-failed</code> plus the PR’s <code>Deploy:</code> block are the pipeline’s handshake — the only deploy instructions the agent follows."
       ]
     },
     {
@@ -92,6 +112,7 @@
         "All reusable agent workflows are saved as Hermes skills (markdown files with YAML frontmatter that agents can load as procedural memory):",
         "<strong>agent-onboarding</strong> — Full bootstrap procedure: Linux user, SSH/GPG keys, Hermes install, config, git setup, Forgejo PAT wiring, cron creation. Includes email convention, PATH pitfalls, and gateway setup.",
         "<strong>pr-review-workflow</strong> — Three-tier PR approval system. Covers the decision matrix, tea CLI commands for each tier, and the agent feedback loop.",
+        "<strong>production-deploy</strong> — The full Canterbury deploy procedure: preflight rules, Deploy: block parsing, env-file comparison, build/up over the remote context, NPM proxy host management, three-stage health verification, rollback rules, and the report/label protocol.",
         "Both skills live at <code>Harrsch-Industries/skill-library</code> under <code>devops/&lt;skill&gt;/SKILL.md</code>.",
         "A master configuration reference (<code>AGENTS.md</code>) tracks every agent's specific SSH key fingerprint, GPG key ID, model, budget, cron job ID, and Forgejo PAT for maintenance."
       ]
@@ -107,6 +128,7 @@
     {
       "heading": "Changelog",
       "content": [
+        "<strong>2026-10-27 — Production deploys to Canterbury (v3)</strong> — The DevOps agent now ships merged apps to the bare-metal host through the event pipeline. First production deploy: <code>learning-roadmap</code> → <code>learn.chrisharrsch.com</code> (health checks 200 direct/LAN/public, <code>deployed</code> label set by the agent). Root cause of the first missed deploy: the webhook receiver had no route for the <code>production_deploy</code> event when the PR was merged (logged “No route — ignored”), and the route added afterwards used an unsupported <code>{ref}</code> template variable, crashing on every replay. Fixed the receiver route, installed the <code>devops/production-deploy</code> skill, and provisioned the mTLS canterbury Docker context with a dedicated <code>hi-devops-agent</code> client certificate.",
         "<strong>2026-10-10 — Event-driven pipeline (v2)</strong> — Replaced all polling crons with Forgejo Actions + Act Runner. The eng-agent's <code>pr-issue-poller</code> had run 6,516 times in ~9 weeks before being replaced. Deployed a Forgejo Act Runner (<code>lions-rest-inn-vm</code>) on the staging VM, added <code>.forgejo/workflows/agent-trigger.yml</code> to all repos, and a webhook receiver (systemd, port 8899) routing events to the correct agent. All agent crons paused. Verified end-to-end.",
         "<strong>2026-08-03 — Original publish:</strong> Initial multi-agent pipeline with three agents (PM, Engineering, DevOps) polling Forgejo every 10 minutes via Hermes cron jobs. Communication through GitHub issues and PRs, migrated from GitHub to self-hosted Forgejo."
       ]
