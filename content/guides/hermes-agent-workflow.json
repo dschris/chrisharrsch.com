@@ -1,7 +1,7 @@
 {
   "id": "hermes-agent-workflow",
   "title": "Multi-Agent Workflow with Hermes Agents",
-  "date": "2026-10-27",
+  "date": "2026-08-03",
   "tags": [
     "hermes",
     "agents",
@@ -128,9 +128,9 @@
     {
       "heading": "Changelog",
       "content": [
-        "<strong>2026-10-27 — Production deploys to Canterbury (v3)</strong> — The DevOps agent now ships merged apps to the bare-metal host through the event pipeline. First production deploy: <code>learning-roadmap</code> → <code>learn.chrisharrsch.com</code> (health checks 200 direct/LAN/public, <code>deployed</code> label set by the agent). Root cause of the first missed deploy: the webhook receiver had no route for the <code>production_deploy</code> event when the PR was merged (logged “No route — ignored”), and the route added afterwards used an unsupported <code>{ref}</code> template variable, crashing on every replay. Fixed the receiver route, installed the <code>devops/production-deploy</code> skill, and provisioned the mTLS canterbury Docker context with a dedicated <code>hi-devops-agent</code> client certificate.",
-        "<strong>2026-10-10 — Event-driven pipeline (v2)</strong> — Replaced all polling crons with Forgejo Actions + Act Runner. The eng-agent's <code>pr-issue-poller</code> had run 6,516 times in ~9 weeks before being replaced. Deployed a Forgejo Act Runner (<code>lions-rest-inn-vm</code>) on the staging VM, added <code>.forgejo/workflows/agent-trigger.yml</code> to all repos, and a webhook receiver (systemd, port 8899) routing events to the correct agent. All agent crons paused. Verified end-to-end.",
-        "<strong>2026-08-03 — Original publish:</strong> Initial multi-agent pipeline with three agents (PM, Engineering, DevOps) polling Forgejo every 10 minutes via Hermes cron jobs. Communication through GitHub issues and PRs, migrated from GitHub to self-hosted Forgejo."
+        "<span class=\"changelog-entry\"><span class=\"changelog-meta\"><span class=\"changelog-date\">2026-10-27</span><span class=\"changelog-ver\">v3</span></span><span class=\"changelog-title\">Production deploys to Canterbury</span><span class=\"changelog-text\">The DevOps agent now ships merged apps to the bare-metal host through the event pipeline. First production deploy: <code>learning-roadmap</code> → <code>learn.chrisharrsch.com</code> (health checks 200 direct/LAN/public, <code>deployed</code> label set by the agent). Root cause of the first missed deploy: the webhook receiver had no route for the <code>production_deploy</code> event when the PR was merged (logged “No route — ignored”), and the route added afterwards used an unsupported <code>{ref}</code> template variable, crashing on every replay. Fixed the receiver route, installed the <code>devops/production-deploy</code> skill, and provisioned the mTLS canterbury Docker context with a dedicated <code>hi-devops-agent</code> client certificate.</span></span>",
+        "<span class=\"changelog-entry\"><span class=\"changelog-meta\"><span class=\"changelog-date\">2026-10-10</span><span class=\"changelog-ver\">v2</span></span><span class=\"changelog-title\">Event-driven pipeline</span><span class=\"changelog-text\">Replaced all polling crons with Forgejo Actions + Act Runner. The eng-agent’s <code>pr-issue-poller</code> had run 6,516 times in ~9 weeks before being replaced. Deployed a Forgejo Act Runner (<code>lions-rest-inn-vm</code>) on the staging VM, added <code>.forgejo/workflows/agent-trigger.yml</code> to all repos, and a webhook receiver (systemd, port 8899) routing events to the correct agent. All agent crons paused. Verified end-to-end.</span></span>",
+        "<span class=\"changelog-entry\"><span class=\"changelog-meta\"><span class=\"changelog-date\">2026-08-03</span><span class=\"changelog-ver\">v1</span></span><span class=\"changelog-title\">Original publish</span><span class=\"changelog-text\">Initial multi-agent pipeline with three agents (PM, Engineering, DevOps) polling Forgejo every 10 minutes via Hermes cron jobs. Communication through GitHub issues and PRs, migrated from GitHub to self-hosted Forgejo.</span></span>"
       ]
     }
   ],

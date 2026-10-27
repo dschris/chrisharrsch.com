@@ -1026,6 +1026,73 @@ p {
     margin-bottom: 0.8rem;
 }
 
+/* Changelog timeline */
+.guide-phase-content p:has(> .changelog-entry) {
+    margin-bottom: 0;
+}
+
+.changelog-entry {
+    display: block;
+    position: relative;
+    padding: 0 0 1.1rem 1.4rem;
+    margin-left: 0.35rem;
+    border-left: 2px solid var(--dim-color);
+}
+
+.changelog-entry:last-child {
+    padding-bottom: 0.1rem;
+    border-left-color: transparent;
+}
+
+.changelog-entry::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0.35rem;
+    width: 8px;
+    height: 8px;
+    background: var(--bg-color);
+    border: 2px solid var(--text-color);
+    border-radius: 50%;
+}
+
+.changelog-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+.changelog-date {
+    font-size: 0.8rem;
+    color: var(--dim-color);
+    letter-spacing: 0.04em;
+}
+
+.changelog-ver {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dim-color);
+    border: 1px solid var(--dim-color);
+    border-radius: 2px;
+    padding: 0.05rem 0.35rem;
+}
+
+.changelog-title {
+    display: block;
+    color: var(--highlight-color);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.changelog-text {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-color);
+}
+
 .guide-steps {
     list-style: none;
     counter-reset: step-counter;
