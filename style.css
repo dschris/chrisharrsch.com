@@ -1039,7 +1039,7 @@ p {
     border-left: 2px solid var(--dim-color);
 }
 
-.changelog-entry:last-child {
+.guide-phase-content p:last-child > .changelog-entry {
     padding-bottom: 0.1rem;
     border-left-color: transparent;
 }

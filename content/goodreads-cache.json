@@ -1,0 +1,668 @@
+{
+  "currentlyReading": [
+    {
+      "title": "The Brothers Karamazov",
+      "link": "https://www.goodreads.com/review/show/8915411241?utm_medium=api&utm_source=rss",
+      "author": "Fyodor Dostoevsky",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1679904450l/123850420._SY475_.jpg"
+    },
+    {
+      "title": "Master and Commander (Aubrey & Maturin, #1)",
+      "link": "https://www.goodreads.com/review/show/8719547390?utm_medium=api&utm_source=rss",
+      "author": "Patrick O'Brian",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1638406499l/59738434._SX318_.jpg"
+    },
+    {
+      "title": "After the Trade Is Made: Processing Securities Transactions",
+      "link": "https://www.goodreads.com/review/show/8428856352?utm_medium=api&utm_source=rss",
+      "author": "David M. Weiss",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386913901l/261694.jpg"
+    },
+    {
+      "title": "The Price of Time: The Real Story of Interest",
+      "link": "https://www.goodreads.com/review/show/8165249231?utm_medium=api&utm_source=rss",
+      "author": "Edward Chancellor",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654569827l/61241469._SY475_.jpg"
+    }
+  ],
+  "read": [
+    {
+      "title": "The Economic Consequences of the Peace",
+      "link": "https://www.goodreads.com/review/show/7865882124?utm_medium=api&utm_source=rss",
+      "author": "John Maynard Keynes",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348969802l/368293.jpg",
+      "rating": 0
+    },
+    {
+      "title": "The End of the World is Just the Beginning: Mapping the Collapse of Globalization―Irreverent Predictions from a Geopolitical Strategist",
+      "link": "https://www.goodreads.com/review/show/8248077366?utm_medium=api&utm_source=rss",
+      "author": "Peter Zeihan",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1640829242l/59973336._SY475_.jpg",
+      "rating": 2
+    },
+    {
+      "title": "There Is No Antimemetics Division",
+      "link": "https://www.goodreads.com/review/show/8262181605?utm_medium=api&utm_source=rss",
+      "author": "qntm",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1597056415l/54870256._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Exit Strategy (The Murderbot Diaries, #4)",
+      "link": "https://www.goodreads.com/review/show/8248837995?utm_medium=api&utm_source=rss",
+      "author": "Martha Wells",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518642623l/35519109._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Harvard Business Review Project Management Handbook: How to Launch, Lead, and Sponsor Successful Projects (HBR Handbooks)",
+      "link": "https://www.goodreads.com/review/show/8152484010?utm_medium=api&utm_source=rss",
+      "author": "Antonio Nieto-Rodriguez",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1606231017l/56031766._SX318_.jpg",
+      "rating": 2
+    },
+    {
+      "title": "The Physics of Wall Street: A Brief History of Predicting the Unpredictable",
+      "link": "https://www.goodreads.com/review/show/8152377824?utm_medium=api&utm_source=rss",
+      "author": "James Owen Weatherall",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1344716828l/13356644.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Rogue Protocol (The Murderbot Diaries, #3)",
+      "link": "https://www.goodreads.com/review/show/6665189999?utm_medium=api&utm_source=rss",
+      "author": "Martha Wells",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1506001602l/36153880._SY475_.jpg",
+      "rating": 2
+    },
+    {
+      "title": "Oil Powers: A History of the U.S.-Saudi Alliance",
+      "link": "https://www.goodreads.com/review/show/6672960524?utm_medium=api&utm_source=rss",
+      "author": "Victor McFarland",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1576626688l/49151701.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Gideon the Ninth (The Locked Tomb, #1)",
+      "link": "https://www.goodreads.com/review/show/6446800664?utm_medium=api&utm_source=rss",
+      "author": "Tamsyn Muir",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1603030399l/55710230._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Artificial Condition (The Murderbot Diaries, #2)",
+      "link": "https://www.goodreads.com/review/show/6474412677?utm_medium=api&utm_source=rss",
+      "author": "Martha Wells",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1505589896l/36223859._SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Memory's Legion: The Complete Expanse Story Collection",
+      "link": "https://www.goodreads.com/review/show/6411996934?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1624332082l/58396198._SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "The Way of Kings (The Stormlight Archive, #1)",
+      "link": "https://www.goodreads.com/review/show/6135021646?utm_medium=api&utm_source=rss",
+      "author": "Brandon Sanderson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1730464382l/53463056._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Self-Reliance & Other Essays",
+      "link": "https://www.goodreads.com/review/show/6049672257?utm_medium=api&utm_source=rss",
+      "author": "Ralph Waldo Emerson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1608882970l/56406428._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "The Traitor Baru Cormorant (The Masquerade, #1)",
+      "link": "https://www.goodreads.com/review/show/5948450293?utm_medium=api&utm_source=rss",
+      "author": "Seth Dickinson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1526945167l/40189879._SY475_.jpg",
+      "rating": 2
+    },
+    {
+      "title": "4000 Weeks",
+      "link": "https://www.goodreads.com/review/show/4560483065?utm_medium=api&utm_source=rss",
+      "author": "Robert Bosman",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1509029798l/36481028._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Flash Boys: A Wall Street Revolt",
+      "link": "https://www.goodreads.com/review/show/5961341003?utm_medium=api&utm_source=rss",
+      "author": "Michael   Lewis",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1426093936l/24724602.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Ancillary Justice (Imperial Radch, #1)",
+      "link": "https://www.goodreads.com/review/show/2861009683?utm_medium=api&utm_source=rss",
+      "author": "Ann Leckie",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1500338704l/35696749._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "All Systems Red (The Murderbot Diaries, #1)",
+      "link": "https://www.goodreads.com/review/show/5474102190?utm_medium=api&utm_source=rss",
+      "author": "Martha Wells",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654570040l/33396171._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Of Blood and Honor",
+      "link": "https://www.goodreads.com/review/show/5885515801?utm_medium=api&utm_source=rss",
+      "author": "Chris Metzen",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328301826l/5050052.jpg",
+      "rating": 0
+    },
+    {
+      "title": "A Desolation Called Peace (Teixcalaan, #2)",
+      "link": "https://www.goodreads.com/review/show/5838814748?utm_medium=api&utm_source=rss",
+      "author": "Arkady Martine",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654565596l/45154547._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "A Memory Called Empire (Teixcalaan, #1)",
+      "link": "https://www.goodreads.com/review/show/5789624796?utm_medium=api&utm_source=rss",
+      "author": "Arkady Martine",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1528119589l/39873472._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "This Is How You Lose the Time War",
+      "link": "https://www.goodreads.com/review/show/4840282987?utm_medium=api&utm_source=rss",
+      "author": "Amal El-Mohtar",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1622667275l/55710260._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The New Lombard Street: How the Fed Became the Dealer of Last Resort",
+      "link": "https://www.goodreads.com/review/show/5358018520?utm_medium=api&utm_source=rss",
+      "author": "Perry G. Mehrling",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394595125l/18945577.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Four Thousand Weeks: Time Management for Mortals",
+      "link": "https://www.goodreads.com/review/show/5383061513?utm_medium=api&utm_source=rss",
+      "author": "Oliver Burkeman",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627425434l/54785515._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "The Sundering (WarCraft: War of the Ancients, #3)",
+      "link": "https://www.goodreads.com/review/show/2073741432?utm_medium=api&utm_source=rss",
+      "author": "Richard A. Knaak",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328321902l/6564784.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The Demon Soul (WarCraft: War of the Ancients, #2)",
+      "link": "https://www.goodreads.com/review/show/2073741281?utm_medium=api&utm_source=rss",
+      "author": "Richard A. Knaak",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328339510l/6706563.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Age of Ash (Kithamar #1)",
+      "link": "https://www.goodreads.com/review/show/4775399934?utm_medium=api&utm_source=rss",
+      "author": "Daniel Abraham",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1625021251l/58457719._SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Thinking in Systems: A Primer",
+      "link": "https://www.goodreads.com/review/show/4687103930?utm_medium=api&utm_source=rss",
+      "author": "Donella H. Meadows",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1735956251l/18891716._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Genghis Khan and the Making of the Modern World",
+      "link": "https://www.goodreads.com/review/show/3103763427?utm_medium=api&utm_source=rss",
+      "author": "Jack Weatherford",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1530716694l/40718726._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Leviathan Falls (The Expanse #9)",
+      "link": "https://www.goodreads.com/review/show/4463478604?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1722112983l/57397125._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Salt: A World History",
+      "link": "https://www.goodreads.com/review/show/3267163760?utm_medium=api&utm_source=rss",
+      "author": "Mark Kurlansky",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1414608893l/2715.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Daemon (Daemon, #1)",
+      "link": "https://www.goodreads.com/review/show/2073723343?utm_medium=api&utm_source=rss",
+      "author": "Daniel Suarez",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348912643l/6665847.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Tiamat's Wrath (The Expanse, #8)",
+      "link": "https://www.goodreads.com/review/show/4246294881?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1525879624l/39713324._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Persepolis Rising (The Expanse, #7)",
+      "link": "https://www.goodreads.com/review/show/4246294096?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654567413l/34600958._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Babylon's Ashes (Expanse, #6)",
+      "link": "https://www.goodreads.com/review/show/3947455951?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654567534l/28053798._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Essentialism: The Disciplined Pursuit of Less",
+      "link": "https://www.goodreads.com/review/show/3915082686?utm_medium=api&utm_source=rss",
+      "author": "Greg McKeown",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1755208457l/19776547.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The Information: A History, a Theory, a Flood",
+      "link": "https://www.goodreads.com/review/show/3894188426?utm_medium=api&utm_source=rss",
+      "author": "James Gleick",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348046486l/8701960.jpg",
+      "rating": 5
+    },
+    {
+      "title": "So Good They Can't Ignore You: Why Skills Trump Passion in the Quest for Work You Love",
+      "link": "https://www.goodreads.com/review/show/3902188989?utm_medium=api&utm_source=rss",
+      "author": "Cal Newport",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1394777417l/18624272.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Nemesis Games (The Expanse, #5)",
+      "link": "https://www.goodreads.com/review/show/3778929916?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654567652l/22886612._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Astrophysics for People in a Hurry",
+      "link": "https://www.goodreads.com/review/show/3496638588?utm_medium=api&utm_source=rss",
+      "author": "Neil deGrasse Tyson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1562761669l/32191710._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Exhalation",
+      "link": "https://www.goodreads.com/review/show/3245695315?utm_medium=api&utm_source=rss",
+      "author": "Ted Chiang",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1560784555l/50917309._SX318_SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "How to Be Fine: What We Learned from Living by the Rules of 50 Self-Help Books",
+      "link": "https://www.goodreads.com/review/show/3225492372?utm_medium=api&utm_source=rss",
+      "author": "Jolenta Greenberg",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1563760785l/52436930._SX318_SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Cibola Burn (Expanse, #4)",
+      "link": "https://www.goodreads.com/review/show/3217053597?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386922006l/18886975.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Abaddon's Gate (Expanse, #3)",
+      "link": "https://www.goodreads.com/review/show/3199795986?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654567747l/18663149._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Caliban's War (Expanse, #2)",
+      "link": "https://www.goodreads.com/review/show/3179964860?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654571158l/18142735._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Leviathan Wakes",
+      "link": "https://www.goodreads.com/review/show/3104705132?utm_medium=api&utm_source=rss",
+      "author": "James S.A. Corey",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1411013134l/8855321.jpg",
+      "rating": 0
+    },
+    {
+      "title": "The Millionaire Next Door (Millionaire Set Book 2)",
+      "link": "https://www.goodreads.com/review/show/3081603211?utm_medium=api&utm_source=rss",
+      "author": "Thomas J. Stanley",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1567874942l/50926504._SX318_SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Tales of the Dying Earth: The Dying Earth, The Eyes of the Overworld, Cugel's Saga, Rhialto the Marvellous",
+      "link": "https://www.goodreads.com/review/show/3102193497?utm_medium=api&utm_source=rss",
+      "author": "Jack Vance",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1457265137l/29428642._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Investing QuickStart Guide: The Simplified Beginner's Guide to Successfully Navigating the Stock Market, Growing Your Wealth & Creating a Secure Financial Future (QuickStart Guides™ - Finance)",
+      "link": "https://www.goodreads.com/review/show/3091119244?utm_medium=api&utm_source=rss",
+      "author": "Ted  Snow",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1536620503l/41795502._SX318_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+      "link": "https://www.goodreads.com/review/show/3062548744?utm_medium=api&utm_source=rss",
+      "author": "James Clear",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1655988385l/40121378.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Data Science for Business: What You Need to Know about Data Mining and Data-Analytic Thinking",
+      "link": "https://www.goodreads.com/review/show/3090304362?utm_medium=api&utm_source=rss",
+      "author": "Foster Provost",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1374654260l/17912916.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Real-World Data Mining: Applied Business Analytics and Decision Making (FT Press Analytics)",
+      "link": "https://www.goodreads.com/review/show/3082703460?utm_medium=api&utm_source=rss",
+      "author": "Dursun Delen",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1417406824l/19523053.jpg",
+      "rating": 3
+    },
+    {
+      "title": "The Stone Sky (The Broken Earth, #3)",
+      "link": "https://www.goodreads.com/review/show/2861014786?utm_medium=api&utm_source=rss",
+      "author": "N.K. Jemisin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1494513048l/34017126._SY475_.jpg",
+      "rating": 2
+    },
+    {
+      "title": "The Obelisk Gate (The Broken Earth, #2)",
+      "link": "https://www.goodreads.com/review/show/2861014765?utm_medium=api&utm_source=rss",
+      "author": "N.K. Jemisin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1460946860l/28147302._SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "Sapiens: A Brief History of Humankind",
+      "link": "https://www.goodreads.com/review/show/2853603593?utm_medium=api&utm_source=rss",
+      "author": "Yuval Noah Harari",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1703329310l/23692271._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "The Fate of Food: What We'll Eat in a Bigger, Hotter, Smarter World",
+      "link": "https://www.goodreads.com/review/show/2857518082?utm_medium=api&utm_source=rss",
+      "author": "Amanda Little",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1555121832l/45031162._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Liar's Poker",
+      "link": "https://www.goodreads.com/review/show/2504817133?utm_medium=api&utm_source=rss",
+      "author": "Michael   Lewis",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348906209l/7865083.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The 2020 Commission Report On The North Korean Nuclear Attacks Against The United States: A Speculative Novel",
+      "link": "https://www.goodreads.com/review/show/2845499720?utm_medium=api&utm_source=rss",
+      "author": "Jeffrey  Lewis",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1529155352l/38640728._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The Fifth Season (The Broken Earth, #1)",
+      "link": "https://www.goodreads.com/review/show/2845496887?utm_medium=api&utm_source=rss",
+      "author": "N.K. Jemisin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386803701l/19161852.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Exploring Technology and Social Space (New Media Cultures)",
+      "link": "https://www.goodreads.com/review/show/2073733124?utm_medium=api&utm_source=rss",
+      "author": "J. Macgregor Wise",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348131278l/4706460.jpg",
+      "rating": 0
+    },
+    {
+      "title": "We Have No Idea: A Guide to the Unknown Universe",
+      "link": "https://www.goodreads.com/review/show/2461867369?utm_medium=api&utm_source=rss",
+      "author": "Jorge Cham",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1478477608l/32885051._SY475_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Morning Star (Red Rising, #3)",
+      "link": "https://www.goodreads.com/review/show/2330133577?utm_medium=api&utm_source=rss",
+      "author": "Pierce Brown",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654571654l/24685115._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Introduction to Electrodynamics",
+      "link": "https://www.goodreads.com/review/show/2150172902?utm_medium=api&utm_source=rss",
+      "author": "David J. Griffiths",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1569312979l/26619239._SX318_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Golden Son (Red Rising Saga, #2)",
+      "link": "https://www.goodreads.com/review/show/2327285817?utm_medium=api&utm_source=rss",
+      "author": "Pierce Brown",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654571729l/21425079._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Red Rising (Red Rising Saga, #1)",
+      "link": "https://www.goodreads.com/review/show/2326809573?utm_medium=api&utm_source=rss",
+      "author": "Pierce Brown",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654571908l/18046624._SY475_.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Classical Mechanics",
+      "link": "https://www.goodreads.com/review/show/2123181618?utm_medium=api&utm_source=rss",
+      "author": "John R. Taylor",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386912834l/245483.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Hamlet (Shakespeare Library Classic)",
+      "link": "https://www.goodreads.com/review/show/2073755765?utm_medium=api&utm_source=rss",
+      "author": "William Shakespeare",
+      "image_url": "https://s.gr-assets.com/assets/nophoto/book/111x148-675b3b2743c83e96e2540d2929d5f4d2.png",
+      "rating": 4
+    },
+    {
+      "title": "War and Peace",
+      "link": "https://www.goodreads.com/review/show/2073755168?utm_medium=api&utm_source=rss",
+      "author": "Leo Tolstoy",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1396760414l/21851991.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Principles of Electric Circuits: Conventional Current Version (9th Edition)",
+      "link": "https://www.goodreads.com/review/show/2073755114?utm_medium=api&utm_source=rss",
+      "author": "Thomas L. Floyd",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1416780600l/7034155.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Experiments in Electric Circuits",
+      "link": "https://www.goodreads.com/review/show/2073755063?utm_medium=api&utm_source=rss",
+      "author": "Thomas Floyd",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1416780813l/9423783.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Engineering Economic Analysis",
+      "link": "https://www.goodreads.com/review/show/2073754967?utm_medium=api&utm_source=rss",
+      "author": "Donald G. Newnan",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391416265l/18635333.jpg",
+      "rating": 0
+    },
+    {
+      "title": "Engineering Ethics: Concepts and Cases",
+      "link": "https://www.goodreads.com/review/show/2073754857?utm_medium=api&utm_source=rss",
+      "author": "Charles E. Harris Jr.",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1355944446l/15942024.jpg",
+      "rating": 0
+    },
+    {
+      "title": "The Essentials of Technical Communication",
+      "link": "https://www.goodreads.com/review/show/2073754538?utm_medium=api&utm_source=rss",
+      "author": "Elizabeth Tebeaux",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347416382l/12894066.jpg",
+      "rating": 0
+    },
+    {
+      "title": "El príncipe de la niebla (Niebla, #1)",
+      "link": "https://www.goodreads.com/review/show/2073754228?utm_medium=api&utm_source=rss",
+      "author": "Carlos Ruiz Zafón",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386236788l/19202652.jpg",
+      "rating": 3
+    },
+    {
+      "title": "The Principia: Mathematical Principles of Natural Philosophy",
+      "link": "https://www.goodreads.com/review/show/2073753888?utm_medium=api&utm_source=rss",
+      "author": "Isaac Newton",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1517378858l/12481897._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Elementary Differential Equations with Boundary Value Problems",
+      "link": "https://www.goodreads.com/review/show/2073753796?utm_medium=api&utm_source=rss",
+      "author": "Charles Henry Edwards",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348464108l/2356808.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Turn Left at Orion: Hundreds of Night Sky Objects to See in a Home Telescope – and How to Find Them",
+      "link": "https://www.goodreads.com/review/show/2073753681?utm_medium=api&utm_source=rss",
+      "author": "Guy Consolmagno",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1358993605l/11375656.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The Backyard Astronomer's Guide",
+      "link": "https://www.goodreads.com/review/show/2073753618?utm_medium=api&utm_source=rss",
+      "author": "Terence Dickinson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1421256159l/5511343.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Fiber Optic Communications",
+      "link": "https://www.goodreads.com/review/show/2073752561?utm_medium=api&utm_source=rss",
+      "author": "Joseph C. Palais",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348297581l/1664556.jpg",
+      "rating": 4
+    },
+    {
+      "title": "A Brief History of Time",
+      "link": "https://www.goodreads.com/review/show/2073752811?utm_medium=api&utm_source=rss",
+      "author": "Stephen W. Hawking",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328310622l/12339476.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Programmable Logic Controllers",
+      "link": "https://www.goodreads.com/review/show/2073752759?utm_medium=api&utm_source=rss",
+      "author": "James A. Rehg",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348925714l/5079713.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Wireless Communications: Principles and Practice",
+      "link": "https://www.goodreads.com/review/show/2073752384?utm_medium=api&utm_source=rss",
+      "author": "Theodore S. Rappaport",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1372040346l/109421.jpg",
+      "rating": 4
+    },
+    {
+      "title": "Hacking: The Art of Exploitation",
+      "link": "https://www.goodreads.com/review/show/2073752985?utm_medium=api&utm_source=rss",
+      "author": "Jon Erickson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1441733905l/11732660._SX318_.jpg",
+      "rating": 4
+    },
+    {
+      "title": "The Hitchhiker's Guide to the Galaxy (The Hitchhiker's Guide to the Galaxy, #1)",
+      "link": "https://www.goodreads.com/review/show/2073753050?utm_medium=api&utm_source=rss",
+      "author": "Douglas Adams",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1498689318l/35533631._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "Snow Crash",
+      "link": "https://www.goodreads.com/review/show/2073742679?utm_medium=api&utm_source=rss",
+      "author": "Neal Stephenson",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1601222163l/830._SY475_.jpg",
+      "rating": 3
+    },
+    {
+      "title": "The Well of Eternity (WarCraft: War of the Ancients, #1)",
+      "link": "https://www.goodreads.com/review/show/2073740601?utm_medium=api&utm_source=rss",
+      "author": "Richard A. Knaak",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1309802788l/279583.jpg",
+      "rating": 3
+    },
+    {
+      "title": "A Dance with Dragons (A Song of Ice and Fire, #5)",
+      "link": "https://www.goodreads.com/review/show/2073723026?utm_medium=api&utm_source=rss",
+      "author": "George R.R. Martin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1753059444l/10664113._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "A Feast for Crows (A Song of Ice and Fire, #4)",
+      "link": "https://www.goodreads.com/review/show/2073723018?utm_medium=api&utm_source=rss",
+      "author": "George R.R. Martin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1661026821l/13497._SY475_.jpg",
+      "rating": 5
+    },
+    {
+      "title": "A Clash of Kings  (A Song of Ice and Fire, #2)",
+      "link": "https://www.goodreads.com/review/show/2073723003?utm_medium=api&utm_source=rss",
+      "author": "George R.R. Martin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1567840212l/10572.jpg",
+      "rating": 5
+    },
+    {
+      "title": "A Storm of Swords (A Song of Ice and Fire, #3)",
+      "link": "https://www.goodreads.com/review/show/2073722988?utm_medium=api&utm_source=rss",
+      "author": "George R.R. Martin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1571318786l/62291.jpg",
+      "rating": 5
+    },
+    {
+      "title": "A Game of Thrones (A Song of Ice and Fire, #1)",
+      "link": "https://www.goodreads.com/review/show/2073722684?utm_medium=api&utm_source=rss",
+      "author": "George R.R. Martin",
+      "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1562726234l/13496.jpg",
+      "rating": 5
+    }
+  ],
+  "synced": "2026-05-01"
+}

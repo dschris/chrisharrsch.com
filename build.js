@@ -7,6 +7,7 @@ const path = require('path');
 const TEMPLATE_PATH = path.join(__dirname, 'src', 'template.html');
 const CONTENT_DIR = path.join(__dirname, 'content');
 const OUTPUT_PATH = path.join(__dirname, 'index.html');
+const GOODREADS_CACHE_PATH = path.join(CONTENT_DIR, 'goodreads-cache.json');
 
 // Config
 const GOODREADS_ID = '69847098'; // Updated with user's ID
@@ -402,9 +403,37 @@ const build = async () => {
     const resume = readJSON('resume.json');
     const contact = readJSON('contact.json');
 
-    // Fetch External Data
-    const currentlyReadingBooks = await fetchGoodreadsData('currently-reading');
-    const readBooks = await fetchGoodreadsData('read');
+    // Fetch External Data (Goodreads). The public shelf RSS feed is unreliable/dead,
+    // so fall back to the last good snapshot committed in content/goodreads-cache.json.
+    const loadGoodreadsCache = () => {
+        try {
+            return JSON.parse(fs.readFileSync(GOODREADS_CACHE_PATH, 'utf8'));
+        } catch (e) {
+            return null;
+        }
+    };
+    const saveGoodreadsCache = (data) => {
+        try {
+            fs.writeFileSync(GOODREADS_CACHE_PATH, JSON.stringify(data, null, 2) + '\n');
+        } catch (e) {
+            console.warn('Could not write Goodreads cache:', e.message);
+        }
+    };
+
+    const fetchedCurrent = await fetchGoodreadsData('currently-reading');
+    const fetchedRead = await fetchGoodreadsData('read');
+
+    const grCache = loadGoodreadsCache();
+    if (!fetchedCurrent.length && grCache) console.log('Goodreads feed unavailable — using cached currently-reading list.');
+    if (!fetchedRead.length && grCache) console.log('Goodreads feed unavailable — using cached read list.');
+
+    let currentlyReadingBooks = fetchedCurrent.length ? fetchedCurrent : ((grCache && grCache.currentlyReading) || []);
+    let readBooks = fetchedRead.length ? fetchedRead : ((grCache && grCache.read) || []);
+
+    // Only refresh the snapshot when the live feed actually returned data.
+    if (fetchedCurrent.length && fetchedRead.length) {
+        saveGoodreadsCache({ currentlyReading: currentlyReadingBooks, read: readBooks, synced: new Date().toISOString().slice(0, 10) });
+    }
 
     // Logic:
     // 1. Now Reading: All from 'currently-reading'
