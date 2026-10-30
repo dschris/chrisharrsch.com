@@ -68,7 +68,11 @@
         "Under Zone Resources, set it to <strong>Specific zone</strong> → select your domain.",
         "Click Continue to summary → Create Token.",
         "<strong>Copy and save this token immediately</strong> — it is only shown once. Store it in your password manager.",
-        "<em>Your Zone ID is on the right-hand sidebar of your domain's Overview page in Cloudflare. You will need this for the DDNS config.json in Phase 6.</em>"
+        "<em>Your Zone ID is on the right-hand sidebar of your domain's Overview page in Cloudflare. You will need this for the DDNS config.json in Phase 6.</em>",
+        "<strong>Verify the token against the right endpoint.</strong> Account-owned tokens answer <code>401 / code 1000 Invalid API Token</code> on <code>/user/tokens/verify</code> even when they are perfectly valid — the account-scoped endpoint tells the truth: <code>/accounts/&lt;account-id&gt;/tokens/verify</code> returns <code>success: true</code> and <code>status: active</code>.",
+        "&nbsp;&nbsp;This matters more than it looks. Anything scripted with <code>curl -f</code> against the user endpoint treats a healthy token as dead, and the pipeline stops for a reason that does not exist.",
+        "<strong>Store it where a process reads it, not where a shell records it.</strong> A line in an env file with mode <code>600</code>, owned by the account that uses it. To rotate, read the value into a variable and pipe it to whatever rewrites that line — <code>read -rsp 'token: ' T; printf '%s' \"$T\" | sudo /usr/local/sbin/set-token; unset T</code> — so the secret never lands in argv, shell history, or a log.",
+        "&nbsp;&nbsp;Give production tokens an expiry. A credential with DNS edit on every zone that never expires is the kind of thing you find still valid two years later, in a file you forgot existed."
       ]
     },
     {
@@ -158,7 +162,10 @@
         "&nbsp;&nbsp;• SSL tab → select the <code>*.yourdomain.com</code> cert → toggle Force SSL and HTTP/2 Support on → Save.",
         "<strong>Set Cloudflare SSL mode to Full:</strong> In Cloudflare → SSL/TLS → Overview, set the mode to <strong>Full</strong> (not Flexible, not Full Strict). Flexible causes redirect loops because NPM redirects HTTP to HTTPS while Cloudflare is still sending HTTP to the origin. Full requires encryption to the origin but accepts NPM's Let's Encrypt cert without issue.",
         "<em>If you see ERR_TOO_MANY_REDIRECTS after setup, this is almost always the cause — switch Cloudflare from Flexible to Full.</em>",
-        "<strong>Access Control Lists (optional):</strong> For apps you want to restrict to known IPs without full Clerk auth: NPM → Access Lists → Add Access List → add your trusted IP ranges as allow, set default action to deny → attach to the relevant proxy host under its Details tab."
+        "<strong>Access Control Lists:</strong> the cheapest way to keep a host off the public internet. NPM → Access Lists → Add Access List → add trusted ranges as allow, set the default action to deny → attach it to the proxy host under its Details tab.",
+        "&nbsp;&nbsp;<strong>An access list with zero rules allows everything.</strong> It is the nastiest failure here: an empty list looks like a gate in the UI, attaches without complaint, and filters nothing. Only attach lists you have confirmed contain rules, and delete scratch lists in the same sitting you create them.",
+        "&nbsp;&nbsp;Using the API, IP rules live in <code>clients</code> (<code>{address, directive}</code>) — <code>items</code> is the basic-auth user list, and omitting <code>items: []</code> makes creation fail with a <code>500</code> rather than a validation error. Reading a list returns no rules at all unless you ask: <code>GET /api/nginx/access-lists/&lt;id&gt;?expand=clients</code>. Without the expand, a populated list and an empty one are indistinguishable.",
+        "&nbsp;&nbsp;Verify with two clients, not one: a request from an allowed network should return <code>200</code>, one from outside it <code>403</code>. If both return <code>200</code>, the list is empty and you have just published the host."
       ]
     },
     {
@@ -217,7 +224,15 @@
         "<strong>ERR_TOO_MANY_REDIRECTS:</strong> Cloudflare SSL mode is set to Flexible. Change it to Full in Cloudflare → SSL/TLS → Overview.",
         "<strong>NPM bound to 127.0.0.1 only:</strong> server's own nginx is likely still holding ports 80 and 443. Confirm server management ports are set to 8080/8443 (Phase 4), then restart the NPM container.",
         "<strong>Cert shows 'Not Used' in NPM:</strong> Normal — this just means no proxy host has been assigned the cert yet. Confirm the cert issued correctly by checking that an expiry date approximately 90 days out is shown.",
-        "<strong>522 on all connections including local:</strong> Check your ISP gateway for port blocking first — ISP-level port blocks affect all connections. If external users are also getting 522, the ISP gateway is the most likely cause. If external users are unaffected but local access fails, this is likely hairpin NAT — see Local Access in Operational Notes above."
+        "<strong>522 on all connections including local:</strong> Check your ISP gateway for port blocking first — ISP-level port blocks affect all connections. If external users are also getting 522, the ISP gateway is the most likely cause. If external users are unaffected but local access fails, this is likely hairpin NAT — see Local Access in Operational Notes above.",
+        "<strong>Access list attached but not filtering:</strong> the list has no client rules. Read it with <code>?expand=clients</code> — an empty <code>clients</code> array means every request is allowed, whatever the proxy host page implies. Add an allow range (or delete the list) and re-test from a network that should be refused."
+      ]
+    },
+    {
+      "heading": "Changelog",
+      "subtitle": "What changed, and when.",
+      "content": [
+        "<span class=\"changelog-entry\"><span class=\"changelog-meta\"><span class=\"changelog-date\">2026-10-30</span><span class=\"changelog-ver\">v1</span></span><span class=\"changelog-title\">Token verification, token rotation, and access lists that actually filter</span><span class=\"changelog-text\">First recorded revision. Phase 3 now covers verifying a Cloudflare token against the account-scoped endpoint (the user-scoped one rejects valid account-owned tokens) and rotating a stored token without it touching argv or history. Phase 8 expands access control lists: an empty list allows every request while looking like a gate, IP rules live in <code>clients</code> not <code>items</code>, and rules are invisible without <code>?expand=clients</code>. Adds a troubleshooting entry for a list that is attached but not filtering. Earlier revisions of this guide predate the changelog.</span></span>"
       ]
     }
   ]

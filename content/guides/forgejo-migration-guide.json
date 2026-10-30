@@ -156,6 +156,24 @@
       ]
     },
     {
+      "heading": "Phase 7: Event Webhooks and Branch Protection",
+      "subtitle": "Wire Forgejo's own webhooks to a local receiver, then lock the default branch so changes can only arrive as pull requests.",
+      "steps": [
+        "<strong>Forgejo can announce its own events — no CI workflow required.</strong> An <em>organization</em> webhook covers every repo in the org, including repos you create later. <strong>Organization → Settings → Webhooks → Add Webhook → Forgejo</strong>. (A per-repo <code>agent-trigger.yml</code> workflow that re-posts events by hand is the redundant version of this; it also means every new repo starts deaf until someone remembers to copy the file in.)",
+        "Target: <code>POST</code>, content type <code>application/json</code>, URL <code>http://&lt;receiver-host&gt;:&lt;port&gt;/webhook</code>. Set <strong>Trigger On → Custom events</strong> and tick <strong>Issues</strong> and <strong>Pull requests</strong>, including their sub-events — <em>Assignment</em> and <em>Review requested</em> are tracked as separate flags from the parent category.",
+        "<strong>Gotcha 1 — a webhook saved with nothing ticked.</strong> Under Custom events with no boxes checked, the hook is active, appears configured in the UI, and delivers nothing. Every event flag reads <code>false</code> in the database. Check the flags, not the page.",
+        "<strong>Gotcha 2 — SSRF protection blocks your own LAN.</strong> Forgejo will not call a private address until you allowlist it. In <code>app.ini</code>:",
+        "<code>[webhook]<br>&nbsp;&nbsp;ALLOWED_HOST_LIST = &lt;receiver-host&gt;</code>",
+        "&nbsp;&nbsp;Use the exact host, not <code>*</code>. The guarded failure looks like nothing happened: the delivery row reads <code>is_succeed=false</code>, status <code>0</code>, with a body naming the deny — and nothing at all appears in the receiver's log, because no connection was ever attempted.",
+        "<strong>Gotcha 3 — the event header was renamed.</strong> Forgejo sends <code>X-Forgejo-Event</code> and <code>X-GitHub-Event</code>. It does <em>not</em> send <code>X-Gitea-Event</code>. A receiver keyed only to the old Gitea name answers <code>400 missing event type</code> and every event dies quietly. Accept all three header names.",
+        "<strong>Test the pipe without waking an agent.</strong> Comment on an issue and watch the delivery: a receiver that logs <code>Received issue_comment</code> and then ignores it proves transport end to end. Save real agent-firing tests for genuine work.",
+        "<strong>Protect the default branch before agents can write to it.</strong> <strong>Settings → Branches → Add Rule</strong>, or via the API:",
+        "<code>enable_push=false</code> — direct pushes refused<br><code>required_approvals=1</code> — one review before merge<br><code>dismiss_stale_approvals=true</code> — new commits void the old approval<br><code>block_on_outdated_branch=true</code> — rebase instead of merging main into the branch<br><code>block_on_rejected_reviews=true</code> — a \"changes requested\" review blocks merge",
+        "Verify it actually bites. Attempt a direct write with your own repo-admin token — if it succeeds, the protection is applied to the wrong branch or you are a site admin. The expected answer is <code>403 user cannot commit to repo</code>.",
+        "<strong>Then retire the workarounds.</strong> Once the org webhook delivers issue and PR events, delete the per-repo <code>agent-trigger.yml</code> files. Keep any workflow that runs a job Actions must execute — deploys, for instance, are not an event Forgejo can webhook."
+      ]
+    },
+    {
       "heading": "tea CLI Reference",
       "content": [
         "The <code>tea</code> CLI is the official Gitea/Forgejo command-line tool. Key commands for agent automation:",
@@ -171,6 +189,13 @@
         "<tr><td>Create PR</td><td><code>tea pulls create --repo ORG/REPO --base main --head BRANCH --title \"...\" --login forgejo</code></td></tr>",
         "<tr><td>Checkout PR</td><td><code>git fetch origin && git checkout BRANCH</code></td></tr>",
         "</tbody></table>"
+      ]
+    },
+    {
+      "heading": "Changelog",
+      "subtitle": "What changed, and when.",
+      "content": [
+        "<span class=\"changelog-entry\"><span class=\"changelog-meta\"><span class=\"changelog-date\">2026-10-30</span><span class=\"changelog-ver\">v1</span></span><span class=\"changelog-title\">Event webhooks and branch protection</span><span class=\"changelog-text\">First recorded revision. Adds Phase 7: an organization webhook pointed at a local receiver, the three silent failure modes (no events ticked, an SSRF allowlist that refuses private addresses, and a receiver reading the retired <code>X-Gitea-Event</code> header), and the branch-protection settings that make <code>main</code> accept changes only through reviewed pull requests. Earlier revisions of this guide predate the changelog.</span></span>"
       ]
     }
   ]
